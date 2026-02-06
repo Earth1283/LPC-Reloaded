@@ -71,3 +71,6 @@ REBASE.bat
 /.gradle/
 
 /build/*
+
+# VS Code
+.vscode/

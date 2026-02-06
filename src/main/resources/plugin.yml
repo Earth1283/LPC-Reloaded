@@ -12,3 +12,13 @@ commands:
     description: Reload the configuration.
     permission: lpc.reload
     usage: "Usage: /lpc reload"
+  msg:
+    description: Send a private message to a player.
+    aliases: [whisper, tell, w, m, t]
+    permission: lpc.msg
+    usage: "Usage: /msg <player> <message>"
+  reply:
+    description: Reply to the last private message.
+    aliases: [r]
+    permission: lpc.reply
+    usage: "Usage: /r <message>"

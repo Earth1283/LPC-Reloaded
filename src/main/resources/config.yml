@@ -19,6 +19,15 @@
 # More information can be found at the Github Wiki.
 chat-format: "{prefix}{name}<dark_gray> »<reset> {message}"
 
+# Private Message Formats
+# Placeholders:
+# {message} - the message sent
+# {sender} - the sender's name
+# {receiver} - the receiver's name
+private-message-formats:
+  sender: "<gray>You to {receiver}: <white>{message}"
+  receiver: "<gray>{sender} to You: <white>{message}"
+
 # Set the format per group.
 # Note: Option for more advanced users. Remove comments to run.
 group-formats:
