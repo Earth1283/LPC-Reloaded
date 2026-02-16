@@ -145,7 +145,8 @@ interactive:
   # Lines displayed when hovering over a name. Supports MiniMessage and Placeholders.
   hover-text:
     - "<gradient:#AAAAAA:#FFFFFF>Rank: {prefix}</gradient>"
-    - "<#AAAAAA>World: <#FFFFFF>{world}"
+    - "<#AAAAAA>Bio: <#FFFFFF>{bio}"
+    - "{infractions}"
     - "<#AAAAAA>Click to message!"
 
 # Legacy Staff Chat system (Used if 'channels' is disabled).
@@ -170,6 +171,13 @@ filter:
   # Minimum time between messages (in seconds).
   cooldown: 1.5 
   
+  # Prevent excessive capital letters.
+  caps-limit:
+    enabled: true
+    percentage: 70
+    min-length: 5
+    deny-message: "<#FF5555>Please don't use so many capital letters!"
+
   # Prevent Discord invite links.
   anti-discord:
     enabled: true
@@ -192,6 +200,41 @@ filter:
   
   # Message sent to players when they chat too fast. {time} is time left.
   deny-message: "<red>Please wait {time}s before sending another message."
+
+# ----------------------------------------------------------------------
+# Moderation Suite
+# ----------------------------------------------------------------------
+
+mutes:
+  enabled: true
+  # Default reason if none provided.
+  default-reason: "No reason provided"
+  messages:
+    muted: "<gradient:#FF5555:#AA0000>You are muted!</gradient> <#AAAAAA>Reason: <#FFFFFF>{reason} <#AAAAAA>Expires: <#FFFFFF>{time}"
+    permanent: "<gradient:#FF5555:#AA0000>You are permanently muted!</gradient> <#AAAAAA>Reason: <#FFFFFF>{reason}"
+    not-muted: "<#FF5555>{player} is not muted."
+    unmuted: "<#55FF55>You have been unmuted."
+    broadcast-mute: "<#FF5555>{player} has been muted by {staff} for {reason} ({time})."
+    broadcast-unmute: "<#55FF55>{player} has been unmuted by {staff}."
+
+warnings:
+  enabled: true
+  messages:
+    warned: "<gradient:#FF5555:#AA0000>You have been warned!</gradient> <#AAAAAA>Reason: <#FFFFFF>{reason}"
+    broadcast: "<#FF5555>{player} has been warned by {staff} for {reason}."
+    deleted: "<#55FF55>Warning #{id} has been deleted."
+    not-found: "<#FF5555>Warning #{id} not found."
+
+profiles:
+  enabled: true
+  # Format for each infraction line in hover text.
+  infraction-format: "<red>• {reason} <dark_gray>({date})</dark_gray>"
+  # Max number of recent infractions to show in hover.
+  max-hover-infractions: 3
+  # Placeholder if no infractions are found.
+  no-infractions: "<gray>No recent infractions."
+  # Message when bio is set.
+  bio-set: "<#55FF55>Your bio has been updated!"
 
 # Automatically turn URLs in chat into clickable links.
 url-highlighting:

@@ -37,39 +37,86 @@ commands:
     usage: "Usage: /sc <message>"
   chatclear:
     description: Clear the chat.
-            aliases: [cc]
-            permission: lpc.chatclear
-            usage: "Usage: /chatclear"
-          channel:
-            description: Manage chat channels.
-            aliases: [ch]
-            permission: lpc.channel.use
-            usage: "Usage: /ch [channel] [message]"
-        
-        permissions:
-          lpc.reload:
-        
-        description: Allows reloading the configuration.
-        default: op
-      lpc.msg:
-        description: Allows sending private messages.
-        default: true
-      lpc.reply:
-        description: Allows replying to private messages.
-        default: true
-      lpc.socialspy:
-        description: Allows using social spy.
-        default: op
-      lpc.ignore:
-        description: Allows ignoring players.
-        default: true
-      lpc.staffchat:
-        description: Allows using staff chat.
-        default: op
-      lpc.chatclear:
-        description: Allows clearing the chat.
-        default: op
-      lpc.bubbles.toggle:
-        description: Allows toggling chat bubbles for oneself.
-        default: true
-    
+    aliases: [cc]
+    permission: lpc.chatclear
+    usage: "Usage: /chatclear"
+  channel:
+    description: Manage chat channels.
+    aliases: [ch]
+    permission: lpc.channel.use
+    usage: "Usage: /ch [channel] [message]"
+  mute:
+    description: Mute a player.
+    permission: lpc.mute
+  unmute:
+    description: Unmute a player.
+    permission: lpc.unmute
+  warn:
+    description: Warn a player.
+    permission: lpc.warn
+  warnings:
+    description: View player warnings.
+    permission: lpc.warnings
+  delwarn:
+    description: Delete a warning.
+    permission: lpc.delwarn
+  profile:
+    description: View player profile.
+  setbio:
+    description: Set your profile bio.
+  slowmode:
+    description: Set per-player slowmode.
+    permission: lpc.slowmode.set
+
+permissions:
+  lpc.reload:
+    description: Allows reloading the configuration.
+    default: op
+  lpc.msg:
+    description: Allows sending private messages.
+    default: true
+  lpc.reply:
+    description: Allows replying to private messages.
+    default: true
+  lpc.socialspy:
+    description: Allows using social spy.
+    default: op
+  lpc.ignore:
+    description: Allows ignoring players.
+    default: true
+  lpc.staffchat:
+    description: Allows using staff chat.
+    default: op
+  lpc.chatclear:
+    description: Allows clearing the chat.
+    default: op
+  lpc.bubbles.toggle:
+    description: Allows toggling chat bubbles for oneself.
+    default: true
+  lpc.mute:
+    description: Allows muting players.
+    default: op
+  lpc.unmute:
+    description: Allows unmuting players.
+    default: op
+  lpc.warn:
+    description: Allows warning players.
+    default: op
+  lpc.warnings:
+    description: Allows viewing player warnings.
+    default: op
+  lpc.delwarn:
+    description: Allows deleting warnings.
+    default: op
+  lpc.slowmode.set:
+    description: Allows setting per-player slowmode.
+    default: op
+  lpc.staff.viewinfractions:
+    description: Allows viewing infractions in hover profiles.
+    default: op
+  lpc.profile.others:
+    description: Allows viewing profiles of other players.
+    default: op
+  lpc.channel.use:
+    description: Allows using chat channels.
+    default: true

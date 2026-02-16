@@ -21,13 +21,27 @@ public class SpigotChatListener implements Listener {
     private final LPC plugin;
     private final SpigotChatRenderer chatRenderer;
     private final Map<String, String> legacyToMiniMessageColors;
-    private final java.util.Map<java.util.UUID, Long> cooldowns = new java.util.HashMap<>();
 
     public SpigotChatListener(LPC plugin) {
         this.plugin = plugin;
         this.chatRenderer = new SpigotChatRenderer(plugin);
         this.legacyToMiniMessageColors = new HashMap<>();
         initColorMappings();
+    }
+
+    private String formatTimeLeft(long millis) {
+        if (millis <= 0) return "0s";
+        long seconds = millis / 1000 % 60;
+        long minutes = millis / (60 * 1000) % 60;
+        long hours = millis / (60 * 60 * 1000) % 24;
+        long days = millis / (24 * 60 * 60 * 1000);
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d ");
+        if (hours > 0) sb.append(hours).append("h ");
+        if (minutes > 0) sb.append(minutes).append("m ");
+        if (seconds > 0) sb.append(seconds).append("s");
+        return sb.toString().trim();
     }
 
     private void initColorMappings() {
@@ -60,6 +74,19 @@ public class SpigotChatListener implements Listener {
         String rawMessage = event.getMessage();
         org.bukkit.entity.Player player = event.getPlayer();
 
+        // Mute Check
+        de.ayont.lpc.moderation.Mute mute = plugin.getModerationManager().getActiveMute(player.getUniqueId());
+        if (mute != null && !player.hasPermission("lpc.mute.bypass")) {
+            event.setCancelled(true);
+            String timeStr = mute.isPermanent() ? "Permanent" : formatTimeLeft(mute.getExpiry() - System.currentTimeMillis());
+            String msgKey = mute.isPermanent() ? "mutes.messages.permanent" : "mutes.messages.muted";
+            String muteMsg = plugin.getConfig().getString(msgKey, "<red>You are muted! Reason: {reason}")
+                    .replace("{reason}", mute.getReason())
+                    .replace("{time}", timeStr);
+            plugin.getAdventure().player(player).sendMessage(MiniMessage.miniMessage().deserialize(muteMsg));
+            return;
+        }
+
         // Staff Chat
         if (plugin.getConfig().getBoolean("staff-chat.enabled", false)) {
             String prefix = plugin.getConfig().getString("staff-chat.prefix", "#");
@@ -82,21 +109,32 @@ public class SpigotChatListener implements Listener {
             }
         }
 
-        // Chat Filter
+        // Chat Filter & Moderation
         if (plugin.getConfig().getBoolean("filter.enabled", false) && !player.hasPermission("lpc.filter.bypass")) {
-            // Cooldown
-            double cooldownSeconds = plugin.getConfig().getDouble("filter.cooldown", 0.0);
-            if (cooldownSeconds > 0) {
-                long now = System.currentTimeMillis();
-                long lastChat = cooldowns.getOrDefault(player.getUniqueId(), 0L);
-                if (now - lastChat < cooldownSeconds * 1000) {
-                    event.setCancelled(true);
-                    String denyMsg = plugin.getConfig().getString("filter.deny-message", "<red>Please wait {time}s.");
-                    double timeLeft = (cooldownSeconds * 1000 - (now - lastChat)) / 1000.0;
-                    plugin.getAdventure().player(player).sendMessage(MiniMessage.miniMessage().deserialize(denyMsg.replace("{time}", String.format("%.1f", timeLeft))));
-                    return;
+            // Cooldown / Slowmode
+            if (!plugin.getModerationManager().canChat(player)) {
+                event.setCancelled(true);
+                String denyMsg = plugin.getConfig().getString("filter.deny-message", "<red>Please wait {time}s.");
+                double timeLeft = plugin.getModerationManager().getTimeLeft(player.getUniqueId());
+                plugin.getAdventure().player(player).sendMessage(MiniMessage.miniMessage().deserialize(denyMsg.replace("{time}", String.format("%.1f", timeLeft))));
+                return;
+            }
+
+            // Caps Limit
+            if (plugin.getConfig().getBoolean("filter.caps-limit.enabled", false)) {
+                int minLength = plugin.getConfig().getInt("filter.caps-limit.min-length", 5);
+                if (rawMessage.length() >= minLength) {
+                    double percentage = plugin.getConfig().getDouble("filter.caps-limit.percentage", 70.0);
+                    int upperCount = 0;
+                    for (char c : rawMessage.toCharArray()) {
+                        if (Character.isUpperCase(c)) upperCount++;
+                    }
+                    if (((double) upperCount / rawMessage.length()) * 100 > percentage) {
+                        event.setCancelled(true);
+                        plugin.getAdventure().player(player).sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.caps-limit.deny-message", "<red>Too many caps!")));
+                        return;
+                    }
                 }
-                cooldowns.put(player.getUniqueId(), now);
             }
 
             // Anti-Discord
@@ -119,6 +157,8 @@ public class SpigotChatListener implements Listener {
                 }
             }
         }
+
+        plugin.getModerationManager().updateLastChat(player.getUniqueId());
 
         // Ignore System
         if (plugin.getConfig().getBoolean("ignore.enabled", false)) {
@@ -200,6 +240,6 @@ public class SpigotChatListener implements Listener {
                 .useUnusualXRepeatedCharacterHexFormat()
                 .hexColors()
                 .build()
-                .serialize(chatRenderer.render(event.getPlayer(), message)));
+                .serialize(chatRenderer.render(event.getPlayer(), message, plugin.getAdventure().player(event.getPlayer()))));
     }
 }

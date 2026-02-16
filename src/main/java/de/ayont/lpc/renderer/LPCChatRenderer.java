@@ -110,14 +110,26 @@ public class LPCChatRenderer implements ChatRenderer {
             
             List<String> hoverLines = plugin.getConfig().getStringList("interactive.hover-text");
             StringBuilder hoverBuilder = new StringBuilder();
+            String bio = plugin.getModerationManager().getBio(source.getUniqueId());
+            String infractions = "";
+            if (viewer instanceof Player && ((Player) viewer).hasPermission("lpc.staff.viewinfractions")) {
+                int max = plugin.getConfig().getInt("profiles.max-hover-infractions", 3);
+                infractions = plugin.getModerationManager().getInfractionsSummary(source.getUniqueId(), max);
+            }
+
             for (int i = 0; i < hoverLines.size(); i++) {
-                hoverBuilder.append(hoverLines.get(i)
+                String line = hoverLines.get(i)
                         .replace("{name}", source.getName())
                         .replace("{displayname}", displayNameReplacement)
                         .replace("{prefix}", metaData.getPrefix() != null ? metaData.getPrefix() : "")
                         .replace("{suffix}", metaData.getSuffix() != null ? metaData.getSuffix() : "")
                         .replace("{world}", source.getWorld().getName())
-                );
+                        .replace("{bio}", bio.isEmpty() ? "No bio set." : bio)
+                        .replace("{infractions}", infractions);
+                
+                if (line.trim().isEmpty()) continue;
+
+                hoverBuilder.append(line);
                 if (i < hoverLines.size() - 1) {
                     hoverBuilder.append("<newline>");
                 }

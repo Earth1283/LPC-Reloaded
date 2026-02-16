@@ -6,6 +6,11 @@ import de.ayont.lpc.listener.AsyncChatListener;
 import de.ayont.lpc.listener.JoinQuitListener;
 import de.ayont.lpc.listener.ShortcutListener;
 import de.ayont.lpc.listener.SpigotChatListener;
+import de.ayont.lpc.moderation.ModerationManager;
+import de.ayont.lpc.storage.Storage;
+import de.ayont.lpc.storage.impl.InMemoryStorage;
+import de.ayont.lpc.storage.impl.MySQLStorage;
+import de.ayont.lpc.storage.impl.SQLiteStorage;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class LPC extends JavaPlugin {
     private boolean isPaper;
@@ -23,6 +29,8 @@ public final class LPC extends JavaPlugin {
     private BukkitAudiences adventure;
     private ChatBubbleManager chatBubbleManager;
     private ChannelManager channelManager;
+    private ModerationManager moderationManager;
+    private Storage storage;
 
     private static final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder()
             .character('§')
@@ -87,6 +95,14 @@ public final class LPC extends JavaPlugin {
         return channelManager;
     }
 
+    public ModerationManager getModerationManager() {
+        return moderationManager;
+    }
+
+    public Storage getStorage() {
+        return storage;
+    }
+
     public BukkitAudiences getAdventure() {
         if(this.adventure == null) {
             throw new IllegalStateException("Adventure is not initialized!");
@@ -100,13 +116,17 @@ public final class LPC extends JavaPlugin {
         this.isPaper = checkIfPaper();
         this.chatBubbleManager = new ChatBubbleManager(this);
         
+        saveDefaultConfig();
+        initStorage();
+
+        this.moderationManager = new ModerationManager(this);
+        
         if (getConfig().getBoolean("channels.enabled", false)) {
             this.channelManager = new ChannelManager(this);
             this.channelManager.init();
         }
 
         registerCommand();
-        saveDefaultConfig();
         registerListeners();
 
         int interval = getConfig().getInt("announcer.interval", 300) * 20;
@@ -120,9 +140,40 @@ public final class LPC extends JavaPlugin {
         if (this.channelManager != null) {
             this.channelManager.shutdown();
         }
+        if (this.storage != null) {
+            this.storage.shutdown();
+        }
         if(this.adventure != null) {
             this.adventure.close();
             this.adventure = null;
+        }
+    }
+
+    private void initStorage() {
+        String type = getConfig().getString("channels.storage.type", "MEMORY").toUpperCase();
+        try {
+            switch (type) {
+                case "SQLITE":
+                    storage = new SQLiteStorage(this, getConfig().getString("channels.storage.file", "channels.db"));
+                    break;
+                case "MYSQL":
+                    storage = new MySQLStorage(this,
+                            getConfig().getString("channels.storage.mysql.host", "localhost"),
+                            getConfig().getInt("channels.storage.mysql.port", 3306),
+                            getConfig().getString("channels.storage.mysql.database", "lpc"),
+                            getConfig().getString("channels.storage.mysql.username", "root"),
+                            getConfig().getString("channels.storage.mysql.password", ""),
+                            getConfig().getString("channels.storage.mysql.table-prefix", "lpc_"));
+                    break;
+                case "MEMORY":
+                default:
+                    storage = new InMemoryStorage();
+                    break;
+            }
+            storage.init();
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "Failed to initialize storage: " + type, e);
+            storage = new InMemoryStorage(); // Fallback
         }
     }
 
@@ -147,6 +198,23 @@ public final class LPC extends JavaPlugin {
         if (this.channelManager != null) {
             this.getCommand("channel").setExecutor(new ChannelCommand(this));
         }
+
+        // Moderation Commands
+        ModerationCommand modCommand = new ModerationCommand(this);
+        this.getCommand("mute").setExecutor(modCommand);
+        this.getCommand("mute").setTabCompleter(modCommand);
+        this.getCommand("unmute").setExecutor(modCommand);
+        this.getCommand("unmute").setTabCompleter(modCommand);
+        this.getCommand("warn").setExecutor(modCommand);
+        this.getCommand("warn").setTabCompleter(modCommand);
+        this.getCommand("warnings").setExecutor(modCommand);
+        this.getCommand("warnings").setTabCompleter(modCommand);
+        this.getCommand("delwarn").setExecutor(modCommand);
+        this.getCommand("profile").setExecutor(modCommand);
+        this.getCommand("profile").setTabCompleter(modCommand);
+        this.getCommand("setbio").setExecutor(modCommand);
+        this.getCommand("slowmode").setExecutor(modCommand);
+        this.getCommand("slowmode").setTabCompleter(modCommand);
     }
 
     public void setLastMessaged(UUID sender, UUID receiver) {

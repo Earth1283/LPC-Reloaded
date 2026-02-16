@@ -20,7 +20,6 @@ public class ChannelManager {
     private final Map<String, Channel> channels = new HashMap<>();
     private final Map<UUID, String> playerChannels = new HashMap<>();
     private String defaultChannel;
-    private Storage storage;
 
     public ChannelManager(LPC plugin) {
         this.plugin = plugin;
@@ -28,41 +27,13 @@ public class ChannelManager {
 
     public void init() {
         loadChannels();
-        initStorage();
     }
     
     public void shutdown() {
-        if (storage != null) {
-            storage.shutdown();
-        }
     }
 
     private void initStorage() {
-        String type = plugin.getConfig().getString("channels.storage.type", "MEMORY").toUpperCase();
-        try {
-            switch (type) {
-                case "SQLITE":
-                    storage = new SQLiteStorage(plugin, plugin.getConfig().getString("channels.storage.file", "channels.db"));
-                    break;
-                case "MYSQL":
-                    storage = new MySQLStorage(plugin,
-                            plugin.getConfig().getString("channels.storage.mysql.host", "localhost"),
-                            plugin.getConfig().getInt("channels.storage.mysql.port", 3306),
-                            plugin.getConfig().getString("channels.storage.mysql.database", "lpc"),
-                            plugin.getConfig().getString("channels.storage.mysql.username", "root"),
-                            plugin.getConfig().getString("channels.storage.mysql.password", ""),
-                            plugin.getConfig().getString("channels.storage.mysql.table-prefix", "lpc_"));
-                    break;
-                case "MEMORY":
-                default:
-                    storage = new InMemoryStorage();
-                    break;
-            }
-            storage.init();
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to initialize storage: " + type, e);
-            storage = new InMemoryStorage(); // Fallback
-        }
+        // Storage is now managed by LPC.java
     }
 
     public void loadChannels() {
@@ -101,9 +72,9 @@ public class ChannelManager {
     }
     
     public void loadPlayerChannel(Player player) {
-        if (storage == null) return;
+        if (plugin.getStorage() == null) return;
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            String channelId = storage.load(player.getUniqueId());
+            String channelId = plugin.getStorage().load(player.getUniqueId());
             if (channelId != null && channels.containsKey(channelId)) {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                     playerChannels.put(player.getUniqueId(), channelId);
@@ -120,9 +91,9 @@ public class ChannelManager {
     public void setPlayerChannel(Player player, String channelId) {
         if (channels.containsKey(channelId)) {
             playerChannels.put(player.getUniqueId(), channelId);
-            if (storage != null) {
+            if (plugin.getStorage() != null) {
                 plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-                   storage.save(player.getUniqueId(), channelId); 
+                   plugin.getStorage().save(player.getUniqueId(), channelId); 
                 });
             }
         }
