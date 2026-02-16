@@ -30,6 +30,10 @@ public class LPCCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1 && "reload".equals(args[0])) {
+            if (!sender.hasPermission("lpc.reload")) {
+                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to reload the config."));
+                return true;
+            }
             plugin.reloadConfig();
             String rawReloadMessage = plugin.getConfig().getString("reload-message", "<green>Reloaded LPC Configuration!</green>");
             Component message = MiniMessage.miniMessage().deserialize(rawReloadMessage);
@@ -41,13 +45,37 @@ public class LPCCommand implements CommandExecutor, TabCompleter {
             }
             return true;
         }
+
+        if (args.length == 1 && "bubbles".equals(args[0])) {
+            if (!(sender instanceof org.bukkit.entity.Player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            org.bukkit.entity.Player player = (org.bukkit.entity.Player) sender;
+            if (!player.hasPermission("lpc.bubbles.toggle")) {
+                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to toggle chat bubbles."));
+                return true;
+            }
+
+            boolean enabled = !plugin.isChatBubblesEnabled(player.getUniqueId());
+            plugin.setChatBubblesEnabled(player.getUniqueId(), enabled);
+            plugin.getChatBubbleManager().updateVisibilityForPlayer(player);
+
+            String status = enabled ? "<green>enabled" : "<red>disabled";
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Chat bubbles are now " + status + "<gray>."));
+            return true;
+        }
         return false;
     }
 
 
     public List<String> onTabComplete(final @NotNull CommandSender sender, final @NotNull Command command, final @NotNull String alias, final String[] args) {
-        if (args.length == 1)
-            return Collections.singletonList("reload");
+        if (args.length == 1) {
+            List<String> suggestions = new ArrayList<>();
+            if (sender.hasPermission("lpc.reload")) suggestions.add("reload");
+            if (sender.hasPermission("lpc.bubbles.toggle")) suggestions.add("bubbles");
+            return suggestions;
+        }
 
         return new ArrayList<>();
     }

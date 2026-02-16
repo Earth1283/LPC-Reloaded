@@ -96,6 +96,20 @@ public class AsyncChatListener implements Listener {
             event.viewers().removeIf(audience -> audience instanceof Player && plugin.isIgnored(((Player) audience).getUniqueId(), player.getUniqueId()));
         }
 
+        // Chat Bubbles
+        if (plugin.getConfig().getBoolean("chat-bubbles.enabled", true)) {
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                plugin.getChatBubbleManager().spawnBubble(player, plainMessage);
+            });
+        }
+        
+        // Chat Channels
+        if (plugin.getConfig().getBoolean("channels.enabled", false)) {
+             event.setCancelled(true);
+             plugin.getChannelManager().sendMessage(player, plainMessage);
+             return;
+        }
+
         if(!plugin.getConfig().getBoolean("use-item-placeholder", false) || !player.hasPermission("lpc.itemplaceholder")){
             event.renderer(lpcChatRenderer);
             return;
@@ -110,6 +124,6 @@ public class AsyncChatListener implements Listener {
 
         event.renderer((source, sourceDisplayName, message, viewer) -> lpcChatRenderer.render(source, sourceDisplayName, message, viewer)
                 .replaceText(TextReplacementConfig.builder().match(compile("\\[item]", CASE_INSENSITIVE))
-                        .replacement(displayName.hoverEvent(item)).build()));
+                        .replacement(displayName.hoverEvent(item.asHoverEvent())).build()));
     }
 }

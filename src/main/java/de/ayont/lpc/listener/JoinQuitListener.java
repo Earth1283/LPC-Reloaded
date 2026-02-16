@@ -27,6 +27,10 @@ public class JoinQuitListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (plugin.getConfig().getBoolean("channels.enabled", false)) {
+            plugin.getChannelManager().loadPlayerChannel(event.getPlayer());
+        }
+
         if (!plugin.getConfig().getBoolean("join-quit-messages.enabled", false)) {
             return;
         }
@@ -55,6 +59,8 @@ public class JoinQuitListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+        plugin.getChatBubbleManager().removeBubble(event.getPlayer().getUniqueId());
+
         if (!plugin.getConfig().getBoolean("join-quit-messages.enabled", false)) {
             return;
         }

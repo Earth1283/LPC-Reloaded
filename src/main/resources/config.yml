@@ -1,22 +1,33 @@
-# LPC Configuration
-# Please read the https://luckperms.net/wiki/Prefixes,-Suffixes-&-Meta before you set up.
+# ----------------------------------------------------------------------
+# LPC Configuration & Documentation
+# ----------------------------------------------------------------------
 #
-# Placeholders:
-# {message} - the chat message
-# {name} - the player's name
-# {displayname} - the player's display name / nickname
-# {world} - the world name of the player's current world
-# {prefix} - the player's highest priority prefix
-# {suffix} - the player's highest priority suffix
-# {prefixes} - the player's prefixes sorted by the highest priority
-# {suffixes} - the player's suffixes sorted by the highest priority
-# {username-color} - the player's or the group's username color
-# {message-color} - the player's or the group's message color
+# 1. FORMATTING (MiniMessage)
+#    LPC uses Kyori MiniMessage for all colors and decorations.
+#    - Legacy codes like '&c' are NOT supported in the config.
+#    - Use tags like '<red>', '<bold>', or Hex: '<#FF5555>'.
+#    - Gradients: '<gradient:#FF5555:#FFAA00>Text</gradient>'
+#    - Hover/Click: '<hover:show_text:"Hi">Click Me</hover>'
+#    - PREVIEW: https://webui.advntr.dev/
+#
+# 2. REGULAR EXPRESSIONS (Regex)
+#    The filter system uses Java-style Regex.
+#    - TESTER: https://regex101.com/ (Select Java flavor)
+#    - Use 'regex:' prefix in blocked-words to enable regex mode.
+#    - Example: 'regex:\b(word)\b' matches the exact word only.
+#
+# 3. CHAT BUBBLES
+#    - Requires Minecraft 1.19.4 or newer.
+#    - Background Color uses RGBA (Red, Green, Blue, Alpha).
+#    - Alpha (0-255) controls transparency.
+#
+# 4. PLACEHOLDERS
+#    - {message}, {name}, {displayname}, {world}
+#    - {prefix}, {suffix}, {prefixes}, {suffixes}
+#    - {username-color}, {message-color}
+# ----------------------------------------------------------------------
 
-# WARNING: Prefixes, Suffixes, message-color etc. needs to be Minimessage Colorcodes and not Legacy!
-
-# To reload the configuration, run '/lpc reload' command. Make sure you have the 'lpc.reload' permission assigned.
-# More information can be found at the Github Wiki.
+# Chat Format
 chat-format: "{prefix}{name}<dark_gray> »<reset> {message}"
 
 # Private Message Formats
@@ -45,6 +56,47 @@ use-item-placeholder: true
 
 # Editing Reload-message
 reload-message: "<green>Reloaded LPC Configuration!"
+
+# ----------------------------------------------------------------------
+# Chat Channels
+# ----------------------------------------------------------------------
+channels:
+  enabled: true
+  default-channel: "global"
+  
+  # Storage for player channel preferences
+  # Options: MEMORY, SQLITE, MYSQL
+  storage:
+    type: "SQLITE"
+    file: "channels.db" # for SQLITE
+    mysql:
+      host: "localhost"
+      port: 3306
+      database: "lpc"
+      username: "root"
+      password: ""
+      table-prefix: "lpc_"
+
+  # Channel Definitions
+  list:
+    global:
+      type: "global"
+      permission: ""
+      format: "{prefix}{name}<dark_gray> »<reset> {message}"
+      shortcut: "g" # /g <msg> or /g (switch)
+      symbol: "!" # !message sends to global
+    staff:
+      type: "permission"
+      permission: "lpc.channel.staff"
+      format: "<red>[Staff] {name}: <white>{message}"
+      shortcut: "sc"
+      symbol: "#"
+    local:
+      type: "range"
+      range: 100
+      format: "<yellow>[L] {name}: <white>{message}"
+      shortcut: "l"
+      symbol: ""
 
 # ----------------------------------------------------------------------
 # Feature Expansions
@@ -134,3 +186,16 @@ announcer:
 chat-clear:
   broadcast: "<gradient:#FF5555:#AA0000>The chat has been cleared by {staff}.</gradient>"
   lines: 100
+
+# 11. Chat Bubbles (Text Display Entities)
+chat-bubbles:
+  enabled: true
+  duration: 5.0 # seconds
+  height-offset: 2.8 # blocks above player head
+  background-color: "0,0,0,100" # RGBA (0-255)
+  see-through: false
+  shadow: true
+  scale: 1.0
+  billboard: "CENTER" # CENTER, VERTICAL, HORIZONTAL, FIXED
+  text-wrap-width: 200 # pixels (approx)
+  behavior: "replace" # replace, stack

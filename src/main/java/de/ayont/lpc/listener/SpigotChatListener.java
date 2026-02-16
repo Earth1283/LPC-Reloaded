@@ -125,6 +125,20 @@ public class SpigotChatListener implements Listener {
             event.getRecipients().removeIf(p -> plugin.isIgnored(p.getUniqueId(), player.getUniqueId()));
         }
 
+        // Chat Bubbles
+        if (plugin.getConfig().getBoolean("chat-bubbles.enabled", true)) {
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                plugin.getChatBubbleManager().spawnBubble(player, rawMessage);
+            });
+        }
+        
+        // Chat Channels
+        if (plugin.getConfig().getBoolean("channels.enabled", false)) {
+             event.setCancelled(true);
+             plugin.getChannelManager().sendMessage(player, rawMessage);
+             return;
+        }
+
         String message = rawMessage;
 
         if (event.getPlayer().hasPermission("lpc.chatcolor")) {
@@ -143,56 +157,42 @@ public class SpigotChatListener implements Listener {
             if (!item.getType().equals(Material.AIR)) {
                 String itemName = item.getType().toString().toLowerCase().replace("_", " ");
                 ItemMeta meta = item.getItemMeta();
-                if (meta != null) {
-                    StringBuilder hoverText = new StringBuilder();
-
-                    if (meta.hasDisplayName()) {
-                        try {
-                            Component displayName = meta.displayName();
-                            if (displayName != null) {
-                                itemName = MiniMessage.miniMessage().serialize(displayName);
-                            }
-                        } catch (NoSuchMethodError e) {
-                            String displayName = meta.getDisplayName();
-                            itemName = MiniMessage.miniMessage().serialize(
-                                    LegacyComponentSerializer.builder()
-                                            .useUnusualXRepeatedCharacterHexFormat()
-                                            .hexColors()
-                                            .character('§')
-                                            .build()
-                                            .deserialize(displayName)
-                            );
+                if (meta != null && meta.hasDisplayName()) {
+                    try {
+                        Component dn = meta.displayName();
+                        if (dn != null) {
+                            itemName = MiniMessage.miniMessage().serialize(dn);
                         }
+                    } catch (NoSuchMethodError e) {
+                        itemName = MiniMessage.miniMessage().serialize(
+                                LegacyComponentSerializer.builder()
+                                        .useUnusualXRepeatedCharacterHexFormat()
+                                        .hexColors()
+                                        .character('§')
+                                        .build()
+                                        .deserialize(meta.getDisplayName())
+                        );
                     }
-
-                    if (meta.hasLore()) {
-                        try {
-                            java.util.List<Component> lore = meta.lore();
-                            if (lore != null) {
-                                for (Component line : lore) {
-                                    hoverText.append("\n").append(MiniMessage.miniMessage().serialize(line));
-                                }
-                            }
-                        } catch (NoSuchMethodError e) {
-                            java.util.List<String> lore = meta.getLore();
-                            if (lore != null) {
-                                for (String line : lore) {
-                                    hoverText.append("\n").append(MiniMessage.miniMessage().serialize(
-                                            LegacyComponentSerializer.builder()
-                                                    .useUnusualXRepeatedCharacterHexFormat()
-                                                    .hexColors()
-                                                    .character('§')
-                                                    .build()
-                                                    .deserialize(line)
-                                    ));
-                                }
-                            }
-                        }
-                    }
-
-                    itemName = "<hover:show_text:'" + itemName + hoverText.toString() + "'>" + itemName + "</hover>";
                 }
-                message = message.replaceFirst("(?i)\\[item]", itemName);
+
+                // Use MiniMessage show_item tag which handles NBT/item details automatically
+                // Syntax: <hover:show_item:'item_type':count:'nbt'>
+                // Since we are using adventure-platform-bukkit, we can also use show_item if supported,
+                // but building the tag manually is often safer for legacy Spigot compatibility.
+                
+                String material = item.getType().getKey().toString();
+                String nbt = "";
+                try {
+                    // Try to get NBT via reflection or Bukkit API if available
+                    // For modern Paper/Spigot, item.asHoverEvent() is available via Adventure
+                    net.kyori.adventure.text.event.HoverEvent<?> hover = item.asHoverEvent();
+                    message = message.replaceFirst("(?i)\\[item]", MiniMessage.miniMessage().serialize(
+                            Component.text(itemName).hoverEvent(hover)
+                    ));
+                } catch (NoClassDefFoundError | NoSuchMethodError e) {
+                    // Fallback to simple name if adventure hover fails
+                    message = message.replaceFirst("(?i)\\[item]", itemName);
+                }
             }
         }
 

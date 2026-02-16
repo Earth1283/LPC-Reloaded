@@ -1,24 +1,28 @@
 package de.ayont.lpc;
 
+import de.ayont.lpc.channels.ChannelManager;
 import de.ayont.lpc.commands.*;
 import de.ayont.lpc.listener.AsyncChatListener;
 import de.ayont.lpc.listener.JoinQuitListener;
+import de.ayont.lpc.listener.ShortcutListener;
+import de.ayont.lpc.listener.SpigotChatListener;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import de.ayont.lpc.listener.SpigotChatListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-
 public final class LPC extends JavaPlugin {
     private boolean isPaper;
     private final Map<UUID, UUID> lastMessaged = new HashMap<>();
     private final java.util.Set<UUID> socialSpyEnabled = new java.util.HashSet<>();
+    private final java.util.Set<UUID> chatBubblesDisabled = new java.util.HashSet<>();
     private final Map<UUID, java.util.Set<UUID>> ignoredPlayers = new HashMap<>();
     private BukkitAudiences adventure;
+    private ChatBubbleManager chatBubbleManager;
+    private ChannelManager channelManager;
 
     private static final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder()
             .character('§')
@@ -63,6 +67,26 @@ public final class LPC extends JavaPlugin {
         return ignoredPlayers.containsKey(ignorer) && ignoredPlayers.get(ignorer).contains(target);
     }
 
+    public boolean isChatBubblesEnabled(UUID uuid) {
+        return !chatBubblesDisabled.contains(uuid);
+    }
+
+    public void setChatBubblesEnabled(UUID uuid, boolean enabled) {
+        if (enabled) {
+            chatBubblesDisabled.remove(uuid);
+        } else {
+            chatBubblesDisabled.add(uuid);
+        }
+    }
+
+    public ChatBubbleManager getChatBubbleManager() {
+        return chatBubbleManager;
+    }
+
+    public ChannelManager getChannelManager() {
+        return channelManager;
+    }
+
     public BukkitAudiences getAdventure() {
         if(this.adventure == null) {
             throw new IllegalStateException("Adventure is not initialized!");
@@ -74,6 +98,13 @@ public final class LPC extends JavaPlugin {
     public void onEnable() {
         this.adventure = BukkitAudiences.create(this);
         this.isPaper = checkIfPaper();
+        this.chatBubbleManager = new ChatBubbleManager(this);
+        
+        if (getConfig().getBoolean("channels.enabled", false)) {
+            this.channelManager = new ChannelManager(this);
+            this.channelManager.init();
+        }
+
         registerCommand();
         saveDefaultConfig();
         registerListeners();
@@ -86,6 +117,9 @@ public final class LPC extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (this.channelManager != null) {
+            this.channelManager.shutdown();
+        }
         if(this.adventure != null) {
             this.adventure.close();
             this.adventure = null;
@@ -109,6 +143,10 @@ public final class LPC extends JavaPlugin {
         this.getCommand("ignore").setExecutor(new IgnoreCommand(this));
         this.getCommand("staffchat").setExecutor(new StaffChatCommand(this));
         this.getCommand("chatclear").setExecutor(new ChatClearCommand(this));
+        
+        if (this.channelManager != null) {
+            this.getCommand("channel").setExecutor(new ChannelCommand(this));
+        }
     }
 
     public void setLastMessaged(UUID sender, UUID receiver) {
@@ -118,8 +156,6 @@ public final class LPC extends JavaPlugin {
     public UUID getLastMessaged(UUID sender) {
         return lastMessaged.get(sender);
     }
-
-
 
     private boolean checkIfPaper() {
         try {
@@ -139,6 +175,9 @@ public final class LPC extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new SpigotChatListener(this), this);
         }
         getServer().getPluginManager().registerEvents(new JoinQuitListener(this), this);
+        
+        if (channelManager != null) {
+            getServer().getPluginManager().registerEvents(new ShortcutListener(this), this);
+        }
     }
-
 }

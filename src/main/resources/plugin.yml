@@ -37,6 +37,39 @@ commands:
     usage: "Usage: /sc <message>"
   chatclear:
     description: Clear the chat.
-    aliases: [cc]
-    permission: lpc.chatclear
-    usage: "Usage: /chatclear"
+            aliases: [cc]
+            permission: lpc.chatclear
+            usage: "Usage: /chatclear"
+          channel:
+            description: Manage chat channels.
+            aliases: [ch]
+            permission: lpc.channel.use
+            usage: "Usage: /ch [channel] [message]"
+        
+        permissions:
+          lpc.reload:
+        
+        description: Allows reloading the configuration.
+        default: op
+      lpc.msg:
+        description: Allows sending private messages.
+        default: true
+      lpc.reply:
+        description: Allows replying to private messages.
+        default: true
+      lpc.socialspy:
+        description: Allows using social spy.
+        default: op
+      lpc.ignore:
+        description: Allows ignoring players.
+        default: true
+      lpc.staffchat:
+        description: Allows using staff chat.
+        default: op
+      lpc.chatclear:
+        description: Allows clearing the chat.
+        default: op
+      lpc.bubbles.toggle:
+        description: Allows toggling chat bubbles for oneself.
+        default: true
+    
