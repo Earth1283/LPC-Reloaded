@@ -84,6 +84,10 @@ public class PrivateMessageCommand implements CommandExecutor, TabCompleter {
         }
 
         if (target != null) {
+            if (plugin.isIgnored(target.getUniqueId(), player.getUniqueId())) {
+                player.sendMessage(miniMessage.deserialize("<red>This player is ignoring you."));
+                return true;
+            }
             sendMessage(player, target, message);
             plugin.setLastMessaged(player.getUniqueId(), target.getUniqueId());
             plugin.setLastMessaged(target.getUniqueId(), player.getUniqueId());
@@ -107,6 +111,17 @@ public class PrivateMessageCommand implements CommandExecutor, TabCompleter {
         // Send
         adventure.player(sender).sendMessage(senderComponent);
         adventure.player(receiver).sendMessage(receiverComponent);
+
+        // Social Spy
+        String spyFormat = plugin.getConfig().getString("social-spy.format", "<dark_gray>[Spy] <gray>{sender} -> {receiver}: <white>{message}");
+        spyFormat = replacePlaceholders(spyFormat, sender, receiver, message);
+        Component spyComponent = miniMessage.deserialize(spyFormat);
+
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (plugin.isSocialSpy(onlinePlayer.getUniqueId()) && !onlinePlayer.getUniqueId().equals(sender.getUniqueId()) && !onlinePlayer.getUniqueId().equals(receiver.getUniqueId())) {
+                adventure.player(onlinePlayer).sendMessage(spyComponent);
+            }
+        }
     }
 
     private String replacePlaceholders(String format, Player sender, Player receiver, String message) {

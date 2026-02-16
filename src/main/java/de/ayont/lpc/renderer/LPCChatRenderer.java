@@ -96,14 +96,85 @@ public class LPCChatRenderer implements ChatRenderer {
                 .replace("{prefixes}", String.join(" ", metaData.getPrefixes().values()))
                 .replace("{suffixes}", String.join(" ", metaData.getSuffixes().values()))
                 .replace("{world}", source.getWorld().getName())
-                .replace("{name}", source.getName())
-                .replace("{displayname}", PlainTextComponentSerializer.plainText().serialize(source.displayName()))
                 .replace("{username-color}", metaData.getMetaValue("username-color") != null ? Objects.requireNonNull(metaData.getMetaValue("username-color")) : "")
                 .replace("{message-color}", metaData.getMetaValue("message-color") != null ? Objects.requireNonNull(metaData.getMetaValue("message-color")) : "");
+
+        // Interactive Player Elements
+        String nameReplacement = source.getName();
+        String displayNameReplacement = PlainTextComponentSerializer.plainText().serialize(source.displayName());
+
+        if (plugin.getConfig().getBoolean("interactive.enabled", false)) {
+            String clickAction = plugin.getConfig().getString("interactive.click-action", "SUGGEST_COMMAND").toLowerCase();
+            String clickValue = plugin.getConfig().getString("interactive.click-value", "/msg {name} ")
+                    .replace("{name}", source.getName());
+            
+            List<String> hoverLines = plugin.getConfig().getStringList("interactive.hover-text");
+            StringBuilder hoverBuilder = new StringBuilder();
+            for (int i = 0; i < hoverLines.size(); i++) {
+                hoverBuilder.append(hoverLines.get(i)
+                        .replace("{name}", source.getName())
+                        .replace("{displayname}", displayNameReplacement)
+                        .replace("{prefix}", metaData.getPrefix() != null ? metaData.getPrefix() : "")
+                        .replace("{suffix}", metaData.getSuffix() != null ? metaData.getSuffix() : "")
+                        .replace("{world}", source.getWorld().getName())
+                );
+                if (i < hoverLines.size() - 1) {
+                    hoverBuilder.append("<newline>");
+                }
+            }
+            String hover = hoverBuilder.toString();
+
+            String events = "<hover:show_text:'" + hover + "'><click:" + clickAction + ":'" + clickValue + "'>";
+            nameReplacement = events + nameReplacement + "</click></hover>";
+            displayNameReplacement = events + displayNameReplacement + "</click></hover>";
+        }
+
+        format = format.replace("{name}", nameReplacement)
+                       .replace("{displayname}", displayNameReplacement);
 
         if (!hasPermission) {
             for (Map.Entry<String, String> entry : legacyToMiniMessageColors.entrySet()) {
                 plainMessage = plainMessage.replace(entry.getValue(), entry.getKey());
+            }
+        }
+
+        // URL Highlighting
+        if (plugin.getConfig().getBoolean("url-highlighting.enabled", false)) {
+            String urlFormat = plugin.getConfig().getString("url-highlighting.format", "<underlined><blue>{url}</blue></underlined>");
+            String urlHover = plugin.getConfig().getString("url-highlighting.hover-text", "<gray>Click to open: <white>{url}");
+            
+            java.util.regex.Pattern urlPattern = java.util.regex.Pattern.compile("(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)");
+            java.util.regex.Matcher matcher = urlPattern.matcher(plainMessage);
+            
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                String url = matcher.group();
+                String fullUrl = url.startsWith("http") ? url : "https://" + url;
+                String replacement = "<click:open_url:'" + fullUrl + "'><hover:show_text:'" + urlHover.replace("{url}", url) + "'>" + urlFormat.replace("{url}", url) + "</hover></click>";
+                matcher.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(replacement));
+            }
+            matcher.appendTail(sb);
+            plainMessage = sb.toString();
+        }
+
+        // Mentions
+        if (plugin.getConfig().getBoolean("mentions.enabled", false) && viewer instanceof Player) {
+            Player viewerPlayer = (Player) viewer;
+            String mentionPattern = "(?i)@" + java.util.regex.Pattern.quote(viewerPlayer.getName());
+            if (java.util.regex.Pattern.compile(mentionPattern).matcher(plainMessage).find()) {
+                String mentionFormat = plugin.getConfig().getString("mentions.format", "<yellow><b>@{name}</b></yellow>").replace("{name}", viewerPlayer.getName());
+                plainMessage = plainMessage.replaceAll(mentionPattern, mentionFormat);
+                
+                String soundName = plugin.getConfig().getString("mentions.sound", "entity.experience_orb.pickup");
+                float volume = (float) plugin.getConfig().getDouble("mentions.volume", 1.0);
+                float pitch = (float) plugin.getConfig().getDouble("mentions.pitch", 1.0);
+                
+                viewer.playSound(net.kyori.adventure.sound.Sound.sound(
+                        net.kyori.adventure.key.Key.key(soundName),
+                        net.kyori.adventure.sound.Sound.Source.PLAYER,
+                        volume,
+                        pitch
+                ));
             }
         }
 

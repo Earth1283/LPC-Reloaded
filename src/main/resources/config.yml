@@ -45,3 +45,92 @@ use-item-placeholder: true
 
 # Editing Reload-message
 reload-message: "<green>Reloaded LPC Configuration!"
+
+# ----------------------------------------------------------------------
+# Feature Expansions
+# ----------------------------------------------------------------------
+
+# 1. Chat Mentions
+mentions:
+  enabled: true
+  format: "<gradient:#FFD700:#FF8C00><b>@{name}</b></gradient>"
+  sound: "entity.experience_orb.pickup"
+  volume: 1.0
+  pitch: 1.0
+  tab-complete: true
+
+# 2. Social Spy
+social-spy:
+  format: "<gradient:#555555:#AAAAAA>[Spy]</gradient> <#AAAAAA>{sender} -> {receiver}: <#FFFFFF>{message}"
+
+# 3. Interactive Player Elements
+interactive:
+  enabled: true
+  click-action: SUGGEST_COMMAND # Options: SUGGEST_COMMAND, RUN_COMMAND, OPEN_URL
+  click-value: "/msg {name} "
+  hover-text:
+    - "<gradient:#AAAAAA:#FFFFFF>Rank: {prefix}</gradient>"
+    - "<#AAAAAA>World: <#FFFFFF>{world}"
+    - "<#AAAAAA>Click to message!"
+
+# 4. Simple Staff Chat
+staff-chat:
+  enabled: true
+  format: "<gradient:#AA0000:#FF5555>[Staff] {name}:</gradient> <#FF5555>{message}"
+  prefix: "#" # Use #message to send to staff chat
+
+# 5. Ignore System
+ignore:
+  enabled: true
+  messages:
+    ignored: "<gradient:#FF5555:#AA0000>You are now ignoring {player}.</gradient>"
+    unignored: "<gradient:#55FF55:#00AA00>You are no longer ignoring {player}.</gradient>"
+    cannot-ignore-self: "<#FF5555>You cannot ignore yourself!"
+    already-ignored: "<#FF5555>You are already ignoring {player}."
+    not-ignored: "<#FF5555>You are not ignoring {player}."
+
+# 6. Advanced Chat Filter
+filter:
+  enabled: true
+  cooldown: 1.5 # seconds
+  anti-discord:
+    enabled: true
+    regex: "discord(?:\\.gg|app\\.com\\/invite|\\.com\\/invite)\\/[a-zA-Z0-9]+"
+    deny-message: "<gradient:#FF5555:#AA0000>Discord invites are not allowed!</gradient>"
+  anti-link:
+    enabled: true
+    regex: "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+    deny-message: "<gradient:#FF5555:#AA0000>Links are not allowed in chat!</gradient>"
+  blocked-words:
+    - "badword1"
+    - "regex:\\b(f[u*]ck)\\b"
+  replacement: "****"
+  deny-message: "<red>Please wait {time}s before sending another message."
+
+# 7. URL Auto-Highlighting
+url-highlighting:
+  enabled: true
+  format: "<underlined><gradient:#55FFFF:#00AAAA>{url}</gradient></underlined>"
+  hover-text: "<#AAAAAA>Click to open: <#FFFFFF>{url}"
+
+# 8. Custom Join/Quit Messages
+join-quit-messages:
+  enabled: true
+  join: "<#AAAAAA>[<#55FF55>+</#55FF55>] <gradient:#55FF55:#FFFFFF>{prefix}{name}</gradient>"
+  quit: "<#AAAAAA>[<#FF5555>-</#FF5555>] <gradient:#FF5555:#FFFFFF>{prefix}{name}</gradient>"
+  first-join: "<gradient:#FFAA00:#FFD700>Welcome {name} to the server!</gradient>"
+
+# 9. Auto-Announcer (Broadcasts)
+announcer:
+  enabled: true
+  interval: 300 # seconds
+  selection-strategy: "ordered" # Options: random, ordered (top to bottom), reverse (bottom to top)
+  messages:
+    - "<gradient:#55FFFF:#00AAAA>Tip: Use /help to see available commands!</gradient>"
+    - "<gradient:#55FF55:#00AA00>Join our Discord: discord.gg/example</gradient>"
+    - "<gradient:#FFAA00:#FFD700>Visit our wiki for tutorials!</gradient>"
+
+# 10. Chat Clear Command
+chat-clear:
+  broadcast: "<gradient:#FF5555:#AA0000>The chat has been cleared by {staff}.</gradient>"
+  lines: 100

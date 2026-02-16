@@ -2,11 +2,10 @@ name: LPC
 version: '${version}'
 main: de.ayont.lpc.LPC
 api-version: '1.21'
-authors: [Ayont, Varilx-Development]
+authors: [Ayont, Varilx-Development, Earth1283]
 depend: [LuckPerms]
 softdepend: [PlaceholderAPI]
-description: Edit version of wikmors Legacy LPC plugin (Minimessage Support 1.21.5)
-website: https://modrinth.com/plugin/lpc-chat
+description: LPC, but FOSS with supposed premium featuers made free
 commands:
   lpc:
     description: Reload the configuration.
@@ -22,3 +21,22 @@ commands:
     aliases: [r]
     permission: lpc.reply
     usage: "Usage: /r <message>"
+  socialspy:
+    description: Toggle Social Spy mode.
+    aliases: [ss]
+    permission: lpc.socialspy
+    usage: "Usage: /socialspy"
+  ignore:
+    description: Ignore another player.
+    permission: lpc.ignore
+    usage: "Usage: /ignore <player>"
+  staffchat:
+    description: Send a message to the staff channel.
+    aliases: [sc]
+    permission: lpc.staffchat
+    usage: "Usage: /sc <message>"
+  chatclear:
+    description: Clear the chat.
+    aliases: [cc]
+    permission: lpc.chatclear
+    usage: "Usage: /chatclear"
