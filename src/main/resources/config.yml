@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# LPC Configuration & Documentation
+# LPC Reloaded Configuration & Documentation
 # ----------------------------------------------------------------------
 #
 # 1. FORMATTING (MiniMessage)
@@ -62,6 +62,16 @@ use-item-placeholder: true
 reload-message: "<green>Reloaded LPC Configuration!"
 
 # ----------------------------------------------------------------------
+# General Messages
+# ----------------------------------------------------------------------
+# Common messages used across various commands and features.
+general-messages:
+  no-permission: "<red>You do not have permission to do that!"
+  only-players: "<red>This command can only be used by players."
+  player-not-found: "<red>Player not found."
+  usage: "<red>Usage: {usage}"
+
+# ----------------------------------------------------------------------
 # Chat Channels
 # ----------------------------------------------------------------------
 # Channels allow separating chat into different streams (Global, Staff, Local).
@@ -69,6 +79,16 @@ channels:
   # Set to true to enable the channel system.
   enabled: true
   
+  # Messages related to chat channels.
+  messages:
+    disabled: "<red>Chat channels are disabled."
+    not-found: "<red>Channel not found."
+    no-permission-join: "<red>You do not have permission to join this channel."
+    no-permission-speak: "<red>You do not have permission to speak in this channel."
+    switched: "<green>Switched to channel: <white>{channel}"
+    current: "<gray>You are currently talking in: <white>{channel}"
+    no-channel: "<red>No channel available."
+
   # The channel players are placed in by default.
   default-channel: "global"
   
@@ -84,7 +104,7 @@ channels:
       host: "localhost"
       port: 3306
       database: "lpc"
-      username: "root"
+      username: "minecraft" # please do not use your root credentials
       password: ""
       table-prefix: "lpc_"
 
@@ -128,21 +148,29 @@ mentions:
   volume: 1.0
   pitch: 1.0
   # Whether to suggest player names when typing @ in chat.
+  # For instance, LPC will suggest @Hello123 when @He is typed and [TAB] is pressed
+  # This works in a similar manner as command tab completion.
   tab-complete: true
 
 # Allows staff to monitor private messages between players.
 social-spy:
   # The format seen by spies. {sender}, {receiver}, and {message} are available.
   format: "<gradient:#555555:#AAAAAA>[Spy]</gradient> <#AAAAAA>{sender} -> {receiver}: <#FFFFFF>{message}"
+  messages:
+    enabled: "<green>Social Spy enabled."
+    disabled: "<red>Social Spy disabled."
 
 # Add click and hover interactions to player names in chat.
 interactive:
   enabled: true
   # Action when clicking a player's name: SUGGEST_COMMAND, RUN_COMMAND, OPEN_URL.
+  # SUGGEST_COMMAND sends the `/msg thatPlayerName` to the player's chat, though it doesn't run it
+  # RUN_COMMAND is not advised, it runs `/msg playerName` without anything, defeating the purpose
+  # OPEN_URL is definately not advised. A playername is typically not a URL.
   click-action: SUGGEST_COMMAND 
   # The value for the click action. {name} is replaced by the player's name.
   click-value: "/msg {name} "
-  # Lines displayed when hovering over a name. Supports MiniMessage and Placeholders.
+  # Lines displayed when hovering over a name. Supports MiniMessage and PlaceholderAPI.
   hover-text:
     - "<gradient:#AAAAAA:#FFFFFF>Rank: {prefix}</gradient>"
     - "<#AAAAAA>Bio: <#FFFFFF>{bio}"
@@ -154,6 +182,8 @@ staff-chat:
   enabled: true
   format: "<gradient:#AA0000:#FF5555>[Staff] {name}:</gradient> <#FF5555>{message}"
   prefix: "#" # Using # at start of message sends to staff chat.
+  messages:
+    disabled: "<red>Staff chat is disabled."
 
 # Allow players to block messages from specific individuals.
 ignore:
@@ -164,6 +194,8 @@ ignore:
     cannot-ignore-self: "<#FF5555>You cannot ignore yourself!"
     already-ignored: "<#FF5555>You are already ignoring {player}."
     not-ignored: "<#FF5555>You are not ignoring {player}."
+    player-offline: "<red>Player is no longer online."
+    player-ignoring: "<red>This player is ignoring you."
 
 # Automated moderation for chat messages.
 filter:
@@ -230,6 +262,13 @@ mutes:
     broadcast-mute: "<#FF5555>{player} has been muted by {staff} for {reason} ({time})."
     # Broadcast message when a player is unmuted. Visible to users with 'lpc.mute' permission.
     broadcast-unmute: "<#55FF55>{player} has been unmuted by {staff}."
+    disabled: "<red>Muting is currently disabled."
+
+# Generic moderation messages
+moderation:
+  messages:
+    slowmode-set: "<green>Slowmode for {player} set to {seconds}s."
+    invalid-seconds: "<red>Invalid seconds."
 
 # Warnings allow staff to log infractions without necessarily muting.
 warnings:
@@ -247,6 +286,11 @@ warnings:
     deleted: "<#55FF55>Warning #{id} has been deleted."
     # Error message if the warning ID does not exist.
     not-found: "<#FF5555>Warning #{id} not found."
+    disabled: "<red>Warnings are currently disabled."
+    no-warnings: "<gray>No warnings for {player}."
+    header: "<gold>Warnings for {player}:"
+    item: "<yellow>#{id} - <white>{reason} <gray>({date})"
+    invalid-id: "<red>Invalid ID."
 
 # Player profiles allow users to set bios and staff to view infraction history.
 profiles:
@@ -269,8 +313,15 @@ profiles:
   
   # --- Profile Settings ---
   
-  # Message sent to a player after they update their bio with /setbio.
-  bio-set: "<#55FF55>Your bio has been updated!"
+  # Messages sent during profile-related actions.
+  messages:
+    bio-set: "<#55FF55>Your bio has been updated!"
+    disabled: "<red>Profiles are currently disabled."
+    header: "<gold>Profile: {player}"
+    bio: "<gray>Bio: <white>{bio}"
+    no-bio: "No bio set."
+    warnings: "<gray>Warnings: <white>{count}"
+    mute: "<gray>Mute: <red>{reason} (Expires: {time})"
 
 # Automatically turn URLs in chat into clickable links.
 url-highlighting:
@@ -293,6 +344,9 @@ announcer:
   # Interval between messages (in seconds).
   interval: 300 
   # How to pick the next message: 'random', 'ordered', or 'reverse'.
+  # Random - does what it says
+  # Ordered - Does it top to bottom
+  # Reverse - Does it bottom to top
   selection-strategy: "ordered" 
   messages:
     - "<gradient:#55FFFF:#00AAAA>Tip: Use /help to see available commands!</gradient>"
@@ -304,6 +358,7 @@ chat-clear:
   # Message broadcasted when chat is cleared. {staff} is the staff member.
   broadcast: "<gradient:#FF5555:#AA0000>The chat has been cleared by {staff}.</gradient>"
   # Number of empty lines sent to clear the chat.
+  # Sending too many lines **might** crash the client
   lines: 100
 
 # Chat Bubbles (Text Display Entities)
@@ -314,7 +369,7 @@ chat-bubbles:
   duration: 5.0 
   # Height offset (in blocks) above the player's head.
   height-offset: 2.8 
-  # Background color in RGBA (Red, Green, Blue, Alpha). 0-255.
+  # Background color in RGBA (Red, Green, Blue, Alpha). 0-255, or it will break.
   background-color: "0,0,0,100" 
   # Whether the bubble can be seen through solid walls.
   see-through: false
@@ -336,3 +391,5 @@ chat-bubbles:
   #   'replace' - New bubble removes the old one.
   #   'stack' - Not fully implemented yet.
   behavior: "replace"
+  messages:
+    toggle: "<gray>Chat bubbles are now {status}<gray>."

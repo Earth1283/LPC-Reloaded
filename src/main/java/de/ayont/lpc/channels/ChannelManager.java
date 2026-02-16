@@ -122,7 +122,7 @@ public class ChannelManager {
         if (current != null) {
             current.sendMessage(sender, message);
         } else {
-            sender.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<red>No channel available."));
+            sender.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.no-channel", "<red>No channel available.")));
         }
     }
 }

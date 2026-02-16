@@ -21,12 +21,12 @@ public class ChannelCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!plugin.getConfig().getBoolean("channels.enabled", false)) {
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Chat channels are disabled."));
+            plugin.getAdventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.disabled", "<red>Chat channels are disabled.")));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+            plugin.getAdventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("general-messages.only-players", "Only players can use this command.")));
             return true;
         }
 
@@ -35,7 +35,8 @@ public class ChannelCommand implements CommandExecutor {
         if (args.length == 0) {
             // Show current channel
             Channel current = plugin.getChannelManager().getPlayerChannel(player);
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>You are currently talking in: <white>" + (current != null ? current.getName() : "None")));
+            player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.current", "<gray>You are currently talking in: <white>{channel}")
+                    .replace("{channel}", current != null ? current.getName() : "None")));
             return true;
         }
 
@@ -43,12 +44,12 @@ public class ChannelCommand implements CommandExecutor {
         Channel channel = plugin.getChannelManager().getChannel(channelName);
 
         if (channel == null) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Channel not found."));
+            player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.not-found", "<red>Channel not found.")));
             return true;
         }
 
         if (!channel.canJoin(player)) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to join this channel."));
+            player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.no-permission-join", "<red>You do not have permission to join this channel.")));
             return true;
         }
 
@@ -59,7 +60,8 @@ public class ChannelCommand implements CommandExecutor {
         } else {
             // Switch channel
             plugin.getChannelManager().setPlayerChannel(player, channel.getId());
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Switched to channel: " + channel.getName()));
+            player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.switched", "<green>Switched to channel: <white>{channel}")
+                    .replace("{channel}", channel.getName())));
         }
 
         return true;

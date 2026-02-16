@@ -31,29 +31,25 @@ public class LPCCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1 && "reload".equals(args[0])) {
             if (!sender.hasPermission("lpc.reload")) {
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to reload the config."));
+                sender.sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to do that!")));
                 return true;
             }
             plugin.reloadConfig();
             String rawReloadMessage = plugin.getConfig().getString("reload-message", "<green>Reloaded LPC Configuration!</green>");
             Component message = MiniMessage.miniMessage().deserialize(rawReloadMessage);
 
-            if (plugin.getServer().getName().toLowerCase().contains("paper")) {
-                sender.sendMessage(message);
-            } else {
-                sender.sendMessage(LPC.getLegacySerializer().serialize(message));
-            }
+            plugin.getAdventure().sender(sender).sendMessage(message);
             return true;
         }
 
         if (args.length == 1 && "bubbles".equals(args[0])) {
             if (!(sender instanceof org.bukkit.entity.Player)) {
-                sender.sendMessage("This command can only be used by players.");
+                plugin.getAdventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("general-messages.only-players", "Only players can use this command.")));
                 return true;
             }
             org.bukkit.entity.Player player = (org.bukkit.entity.Player) sender;
             if (!player.hasPermission("lpc.bubbles.toggle")) {
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to toggle chat bubbles."));
+                player.sendMessage(MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to do that!")));
                 return true;
             }
 
@@ -62,7 +58,9 @@ public class LPCCommand implements CommandExecutor, TabCompleter {
             plugin.getChatBubbleManager().updateVisibilityForPlayer(player);
 
             String status = enabled ? "<green>enabled" : "<red>disabled";
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Chat bubbles are now " + status + "<gray>."));
+            String msg = plugin.getConfig().getString("chat-bubbles.messages.toggle", "<gray>Chat bubbles are now {status}<gray>.")
+                    .replace("{status}", status);
+            player.sendMessage(MiniMessage.miniMessage().deserialize(msg));
             return true;
         }
         return false;

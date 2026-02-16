@@ -53,15 +53,15 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleMute(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("mutes.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Muting is currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("mutes.messages.disabled", "<red>Muting is currently disabled.")));
             return true;
         }
         if (!sender.hasPermission("lpc.mute")) {
-            sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
             return true;
         }
         if (args.length < 1) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /mute <player> [duration] [reason]"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/mute <player> [duration] [reason]")));
             return true;
         }
 
@@ -98,15 +98,15 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleUnmute(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("mutes.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Muting is currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("mutes.messages.disabled", "<red>Muting is currently disabled.")));
             return true;
         }
         if (!sender.hasPermission("lpc.unmute")) {
-            sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
             return true;
         }
         if (args.length < 1) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /unmute <player>"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/unmute <player>")));
             return true;
         }
 
@@ -123,15 +123,15 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleWarn(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("warnings.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Warnings are currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.disabled", "<red>Warnings are currently disabled.")));
             return true;
         }
         if (!sender.hasPermission("lpc.warn")) {
-            sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
             return true;
         }
         if (args.length < 2) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /warn <player> <reason>"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/warn <player> <reason>")));
             return true;
         }
 
@@ -158,15 +158,15 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleWarnings(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("warnings.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Warnings are currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.disabled", "<red>Warnings are currently disabled.")));
             return true;
         }
         if (!sender.hasPermission("lpc.warnings")) {
-            sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
             return true;
         }
         if (args.length < 1) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /warnings <player>"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/warnings <player>")));
             return true;
         }
 
@@ -174,28 +174,31 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
         List<Warning> warnings = plugin.getModerationManager().getWarnings(target.getUniqueId());
 
         if (warnings.isEmpty()) {
-            sender.sendMessage(miniMessage.deserialize("<gray>No warnings for " + target.getName()));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.no-warnings", "<gray>No warnings for {player}").replace("{player}", target.getName() != null ? target.getName() : args[0])));
             return true;
         }
 
-        sender.sendMessage(miniMessage.deserialize("<gold>Warnings for " + target.getName() + ":"));
+        sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.header", "<gold>Warnings for {player}:").replace("{player}", target.getName() != null ? target.getName() : args[0])));
         for (Warning w : warnings) {
-            sender.sendMessage(miniMessage.deserialize("<yellow>#" + w.getId() + " - <white>" + w.getReason() + " <gray>(" + new Date(w.getTimestamp()) + ")"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.item", "<yellow>#{id} - <white>{reason} <gray>({date})")
+                    .replace("{id}", String.valueOf(w.getId()))
+                    .replace("{reason}", w.getReason())
+                    .replace("{date}", new Date(w.getTimestamp()).toString())));
         }
         return true;
     }
 
     private boolean handleDelWarn(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("warnings.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Warnings are currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.disabled", "<red>Warnings are currently disabled.")));
             return true;
         }
         if (!sender.hasPermission("lpc.delwarn")) {
-            sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
             return true;
         }
         if (args.length < 1) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /delwarn <id>"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/delwarn <id>")));
             return true;
         }
 
@@ -204,26 +207,26 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
             plugin.getModerationManager().deleteWarning(id);
             sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.deleted", "<green>Warning #{id} deleted.").replace("{id}", args[0])));
         } catch (NumberFormatException e) {
-            sender.sendMessage(miniMessage.deserialize("<red>Invalid ID."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("warnings.messages.invalid-id", "<red>Invalid ID.")));
         }
         return true;
     }
 
     private boolean handleProfile(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("profiles.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Profiles are currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("profiles.messages.disabled", "<red>Profiles are currently disabled.")));
             return true;
         }
         OfflinePlayer target;
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage("Usage: /profile <player>");
+                plugin.getAdventure().sender(sender).sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/profile <player>")));
                 return true;
             }
             target = (Player) sender;
         } else {
             if (!sender.hasPermission("lpc.profile.others")) {
-                sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+                sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
                 return true;
             }
             target = Bukkit.getOfflinePlayer(args[0]);
@@ -233,27 +236,29 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
         List<Warning> warnings = plugin.getModerationManager().getWarnings(target.getUniqueId());
         Mute mute = plugin.getModerationManager().getActiveMute(target.getUniqueId());
 
-        sender.sendMessage(miniMessage.deserialize("<gold>Profile: " + target.getName()));
-        sender.sendMessage(miniMessage.deserialize("<gray>Bio: <white>" + (bio.isEmpty() ? "No bio set." : bio)));
-        sender.sendMessage(miniMessage.deserialize("<gray>Warnings: <white>" + warnings.size()));
+        sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("profiles.messages.header", "<gold>Profile: {player}").replace("{player}", target.getName() != null ? target.getName() : args[0])));
+        sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("profiles.messages.bio", "<gray>Bio: <white>{bio}").replace("{bio}", bio.isEmpty() ? plugin.getConfig().getString("profiles.messages.no-bio", "No bio set.") : bio)));
+        sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("profiles.messages.warnings", "<gray>Warnings: <white>{count}").replace("{count}", String.valueOf(warnings.size()))));
         if (mute != null) {
             String time = mute.isPermanent() ? "Permanent" : formatTimeLeft(mute.getExpiry() - System.currentTimeMillis());
-            sender.sendMessage(miniMessage.deserialize("<gray>Mute: <red>" + mute.getReason() + " (Expires: " + time + ")"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("profiles.messages.mute", "<gray>Mute: <red>{reason} (Expires: {time})")
+                    .replace("{reason}", mute.getReason())
+                    .replace("{time}", time)));
         }
         return true;
     }
 
     private boolean handleSetBio(CommandSender sender, String[] args) {
         if (!plugin.getConfig().getBoolean("profiles.enabled", true)) {
-            sender.sendMessage(miniMessage.deserialize("<red>Profiles are currently disabled."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("profiles.messages.disabled", "<red>Profiles are currently disabled.")));
             return true;
         }
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can set their bio.");
+            plugin.getAdventure().sender(sender).sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.only-players", "Only players can use this command.")));
             return true;
         }
         if (args.length == 0) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /setbio <text>"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/setbio <text>")));
             return true;
         }
 
@@ -266,11 +271,11 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
 
     private boolean handleSlowmode(CommandSender sender, String[] args) {
         if (!sender.hasPermission("lpc.slowmode.set")) {
-            sender.sendMessage(miniMessage.deserialize("<red>No permission."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>No permission.")));
             return true;
         }
         if (args.length < 2) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: /slowmode <player> <seconds>"));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/slowmode <player> <seconds>")));
             return true;
         }
 
@@ -278,9 +283,11 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
         try {
             double seconds = Double.parseDouble(args[1]);
             plugin.getModerationManager().setSlowmode(target.getUniqueId(), seconds);
-            sender.sendMessage(miniMessage.deserialize("<green>Slowmode for " + target.getName() + " set to " + seconds + "s."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("moderation.messages.slowmode-set", "<green>Slowmode for {player} set to {seconds}s.")
+                    .replace("{player}", target.getName() != null ? target.getName() : args[0])
+                    .replace("{seconds}", String.valueOf(seconds))));
         } catch (NumberFormatException e) {
-            sender.sendMessage(miniMessage.deserialize("<red>Invalid seconds."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("moderation.messages.invalid-seconds", "<red>Invalid seconds.")));
         }
         return true;
     }

@@ -37,7 +37,7 @@ public class PrivateMessageCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+            adventure.sender(sender).sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.only-players", "Only players can use this command.")));
             return true;
         }
 
@@ -48,15 +48,16 @@ public class PrivateMessageCommand implements CommandExecutor, TabCompleter {
 
         if (command.getName().equalsIgnoreCase("msg")) {
             if (!player.hasPermission("lpc.msg")) {
-                player.sendMessage(miniMessage.deserialize("<red>You do not have permission to use this command."));
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to use this command.")));
                 return true;
             }
             if (args.length < 2) {
-                return false;
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/msg <player> <message>")));
+                return true;
             }
             target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                player.sendMessage("Player not found.");
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.player-not-found", "Player not found.")));
                 return true;
             }
             targetUuid = target.getUniqueId();
@@ -64,20 +65,21 @@ public class PrivateMessageCommand implements CommandExecutor, TabCompleter {
 
         } else if (command.getName().equalsIgnoreCase("reply")) {
             if (!player.hasPermission("lpc.reply")) {
-                player.sendMessage(miniMessage.deserialize("<red>You do not have permission to use this command."));
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to use this command.")));
                 return true;
             }
             if (args.length < 1) {
-                return false;
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/r <message>")));
+                return true;
             }
             targetUuid = plugin.getLastMessaged(player.getUniqueId());
             if (targetUuid == null) {
-                player.sendMessage("You have nobody to reply to.");
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("social.messages.nobody-to-reply", "<red>You have nobody to reply to.")));
                 return true;
             }
             target = Bukkit.getPlayer(targetUuid);
             if (target == null) {
-                player.sendMessage("Player is no longer online.");
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("social.messages.player-offline", "<red>Player is no longer online.")));
                 return true;
             }
             message = String.join(" ", args);
@@ -85,7 +87,7 @@ public class PrivateMessageCommand implements CommandExecutor, TabCompleter {
 
         if (target != null) {
             if (plugin.isIgnored(target.getUniqueId(), player.getUniqueId())) {
-                player.sendMessage(miniMessage.deserialize("<red>This player is ignoring you."));
+                player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("ignore.messages.player-ignoring", "<red>This player is ignoring you.")));
                 return true;
             }
             sendMessage(player, target, message);

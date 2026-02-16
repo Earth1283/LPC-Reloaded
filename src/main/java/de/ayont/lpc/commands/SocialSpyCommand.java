@@ -21,14 +21,14 @@ public class SocialSpyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+            plugin.getAdventure().sender(sender).sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.only-players", "Only players can use this command.")));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("lpc.socialspy")) {
-            player.sendMessage(miniMessage.deserialize("<red>You do not have permission to use this command."));
+            player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to use this command.")));
             return true;
         }
 
@@ -36,9 +36,9 @@ public class SocialSpyCommand implements CommandExecutor {
         plugin.setSocialSpy(player.getUniqueId(), newState);
 
         if (newState) {
-            player.sendMessage(miniMessage.deserialize("<green>Social Spy enabled."));
+            player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("social-spy.messages.enabled", "<green>Social Spy enabled.")));
         } else {
-            player.sendMessage(miniMessage.deserialize("<red>Social Spy disabled."));
+            player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("social-spy.messages.disabled", "<red>Social Spy disabled.")));
         }
 
         return true;

@@ -78,7 +78,7 @@ public abstract class BaseChannel implements Channel {
     @Override
     public void sendMessage(Player sender, String message) {
         if (!canJoin(sender)) {
-            sender.sendMessage(miniMessage.deserialize("<red>You do not have permission to speak in this channel."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("channels.messages.no-permission-speak", "<red>You do not have permission to speak in this channel.")));
             return;
         }
 

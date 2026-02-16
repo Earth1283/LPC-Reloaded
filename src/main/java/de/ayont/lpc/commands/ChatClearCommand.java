@@ -21,7 +21,7 @@ public class ChatClearCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!sender.hasPermission("lpc.chatclear")) {
-            sender.sendMessage(miniMessage.deserialize("<red>You do not have permission to use this command."));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to use this command.")));
             return true;
         }
 

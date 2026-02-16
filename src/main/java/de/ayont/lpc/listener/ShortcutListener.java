@@ -33,12 +33,13 @@ public class ShortcutListener implements Listener {
                     channel.sendMessage(event.getPlayer(), parts[1]);
                 } else {
                     // Switch channel: /g
-                    if (channel.canJoin(event.getPlayer())) {
-                        plugin.getChannelManager().setPlayerChannel(event.getPlayer(), channel.getId());
-                        event.getPlayer().sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<green>Switched to channel: " + channel.getName()));
-                    } else {
-                        event.getPlayer().sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<red>You cannot join this channel."));
-                    }
+                                if (channel.canJoin(event.getPlayer())) {
+                                    plugin.getChannelManager().setPlayerChannel(event.getPlayer(), channel.getId());
+                                    event.getPlayer().sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.switched", "<green>Switched to channel: <white>{channel}").replace("{channel}", channel.getName())));
+                                } else {
+                                    event.getPlayer().sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("channels.messages.no-permission-join", "<red>You do not have permission to join this channel.")));
+                                }
+                    
                 }
                 return;
             }

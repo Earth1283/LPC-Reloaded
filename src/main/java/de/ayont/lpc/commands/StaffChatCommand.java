@@ -23,24 +23,24 @@ public class StaffChatCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+            plugin.getAdventure().sender(sender).sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.only-players", "Only players can use this command.")));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("lpc.staffchat")) {
-            player.sendMessage(miniMessage.deserialize("<red>You do not have permission to use this command."));
+            player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.no-permission", "<red>You do not have permission to use this command.")));
             return true;
         }
 
         if (!plugin.getConfig().getBoolean("staff-chat.enabled", false)) {
-             player.sendMessage(miniMessage.deserialize("<red>Staff chat is disabled."));
+             player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("staff-chat.messages.disabled", "<red>Staff chat is disabled.")));
              return true;
         }
 
         if (args.length < 1) {
-            player.sendMessage(miniMessage.deserialize("<red>Usage: /sc <message>"));
+            player.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("general-messages.usage", "<red>Usage: {usage}").replace("{usage}", "/sc <message>")));
             return true;
         }
 
