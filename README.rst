@@ -60,23 +60,34 @@ Type ``[item]`` in chat to showcase your hand item.
 Permissions
 -----------
 
-+------------------------+-----------------------+------------------------------------------+
-| Command / Feature      | Permission            | Description                              |
-+========================+=======================+==========================================+
-| ``/lpc reload``        | ``lpc.reload``        | Reloads the configuration                |
-+------------------------+-----------------------+------------------------------------------+
-| ``/lpc bubbles``       | ``lpc.bubbles.toggle``| Toggle chat bubbles visibility           |
-+------------------------+-----------------------+------------------------------------------+
-| ``/channel``           | ``lpc.channel.use``   | Switch or message in channels            |
-+------------------------+-----------------------+------------------------------------------+
-| MiniMessage colors     | ``lpc.chatcolor``     | Allows using colors in chat              |
-+------------------------+-----------------------+------------------------------------------+
-| ``[ITEM]`` Placeholder | ``lpc.itemplaceholder``| Use the ``[item]`` placeholder           |
-+------------------------+-----------------------+------------------------------------------+
-| Staff Chat             | ``lpc.staffchat``     | Access to staff chat and symbols         |
-+------------------------+-----------------------+------------------------------------------+
-| Social Spy             | ``lpc.socialspy``     | Monitor private messages                 |
-+------------------------+-----------------------+------------------------------------------+
+.. list-table::
+   :widths: 25 25 50
+   :header-rows: 1
+
+   * - Command / Feature
+     - Permission
+     - Description
+   * - ``/lpc reload``
+     - ``lpc.reload``
+     - Reloads the configuration
+   * - ``/lpc bubbles``
+     - ``lpc.bubbles.toggle``
+     - Toggle chat bubbles visibility for yourself
+   * - ``/channel``
+     - ``lpc.channel.use``
+     - Switch or message in channels
+   * - MiniMessage colors
+     - ``lpc.chatcolor``
+     - Allows using colors in chat
+   * - ``[item]`` Placeholder
+     - ``lpc.itemplaceholder``
+     - Use the ``[item]`` placeholder
+   * - Staff Chat
+     - ``lpc.staffchat``
+     - Access to staff chat and symbols
+   * - Social Spy
+     - ``lpc.socialspy``
+     - Monitor private messages
 
 Available Placeholders
 ----------------------
