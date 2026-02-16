@@ -20,6 +20,7 @@ public class ModerationManager {
     }
 
     public Mute getActiveMute(UUID uuid) {
+        if (!plugin.getConfig().getBoolean("mutes.enabled", true)) return null;
         if (plugin.getStorage() == null) return null;
         Mute mute = plugin.getStorage().loadMute(uuid);
         if (mute != null && mute.hasExpired()) {
@@ -30,36 +31,43 @@ public class ModerationManager {
     }
 
     public void mutePlayer(Mute mute) {
+        if (!plugin.getConfig().getBoolean("mutes.enabled", true)) return;
         if (plugin.getStorage() == null) return;
         plugin.getStorage().saveMute(mute);
     }
 
     public void unmutePlayer(UUID uuid) {
+        if (!plugin.getConfig().getBoolean("mutes.enabled", true)) return;
         if (plugin.getStorage() == null) return;
         plugin.getStorage().removeMute(uuid);
     }
 
     public void warnPlayer(Warning warning) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) return;
         if (plugin.getStorage() == null) return;
         plugin.getStorage().addWarning(warning);
     }
 
     public List<Warning> getWarnings(UUID uuid) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) return Collections.emptyList();
         if (plugin.getStorage() == null) return Collections.emptyList();
         return plugin.getStorage().loadWarnings(uuid);
     }
 
     public void deleteWarning(int id) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) return;
         if (plugin.getStorage() == null) return;
         plugin.getStorage().removeWarning(id);
     }
 
     public void setBio(UUID uuid, String bio) {
+        if (!plugin.getConfig().getBoolean("profiles.enabled", true)) return;
         if (plugin.getStorage() == null) return;
         plugin.getStorage().saveBio(uuid, bio);
     }
 
     public String getBio(UUID uuid) {
+        if (!plugin.getConfig().getBoolean("profiles.enabled", true)) return "";
         if (plugin.getStorage() == null) return "";
         String bio = plugin.getStorage().loadBio(uuid);
         return bio != null ? bio : "";
@@ -113,6 +121,7 @@ public class ModerationManager {
     }
 
     public String getInfractionsSummary(UUID uuid, int max) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) return "";
         List<Warning> warnings = getWarnings(uuid);
         if (warnings.isEmpty()) {
             return plugin.getConfig().getString("profiles.no-infractions", "<gray>No recent infractions.");

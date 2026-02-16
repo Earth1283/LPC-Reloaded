@@ -204,36 +204,72 @@ filter:
 # ----------------------------------------------------------------------
 # Moderation Suite
 # ----------------------------------------------------------------------
+# This suite provides tools for staff to manage player behavior.
+# Each feature can be enabled or disabled independently.
 
+# Muting players prevents them from sending messages in chat.
 mutes:
+  # Set to false to disable the /mute and /unmute commands.
   enabled: true
-  # Default reason if none provided.
+  
+  # Default reason used if a staff member doesn't provide one.
   default-reason: "No reason provided"
+  
+  # Messages sent during mute-related actions.
+  # Placeholders: {reason}, {time} (expiry duration), {player}, {staff}
   messages:
+    # Sent to a player when they try to chat while temporarily muted.
     muted: "<gradient:#FF5555:#AA0000>You are muted!</gradient> <#AAAAAA>Reason: <#FFFFFF>{reason} <#AAAAAA>Expires: <#FFFFFF>{time}"
+    # Sent to a player when they try to chat while permanently muted.
     permanent: "<gradient:#FF5555:#AA0000>You are permanently muted!</gradient> <#AAAAAA>Reason: <#FFFFFF>{reason}"
+    # Error message if the target player is not muted.
     not-muted: "<#FF5555>{player} is not muted."
+    # Sent to a player when they are unmuted.
     unmuted: "<#55FF55>You have been unmuted."
+    # Broadcast message when a player is muted. Visible to users with 'lpc.mute' permission.
     broadcast-mute: "<#FF5555>{player} has been muted by {staff} for {reason} ({time})."
+    # Broadcast message when a player is unmuted. Visible to users with 'lpc.mute' permission.
     broadcast-unmute: "<#55FF55>{player} has been unmuted by {staff}."
 
+# Warnings allow staff to log infractions without necessarily muting.
 warnings:
+  # Set to false to disable /warn, /warnings, and /delwarn.
   enabled: true
+  
+  # Messages sent during warning-related actions.
+  # Placeholders: {reason}, {player}, {staff}, {id}
   messages:
+    # Sent to the player when they receive a warning.
     warned: "<gradient:#FF5555:#AA0000>You have been warned!</gradient> <#AAAAAA>Reason: <#FFFFFF>{reason}"
+    # Broadcast message when a player is warned. Visible to users with 'lpc.warn' permission.
     broadcast: "<#FF5555>{player} has been warned by {staff} for {reason}."
+    # Sent to staff when a warning is successfully deleted.
     deleted: "<#55FF55>Warning #{id} has been deleted."
+    # Error message if the warning ID does not exist.
     not-found: "<#FF5555>Warning #{id} not found."
 
+# Player profiles allow users to set bios and staff to view infraction history.
 profiles:
+  # Set to false to disable /profile and /setbio.
   enabled: true
-  # Format for each infraction line in hover text.
+  
+  # --- Hover Profile Infractions ---
+  # These settings control how {infractions} is rendered in 'interactive.hover-text'.
+  # ONLY players with the 'lpc.staff.viewinfractions' permission can see this content.
+  
+  # Format for each individual warning line.
+  # Placeholders: {reason}, {date}
   infraction-format: "<red>• {reason} <dark_gray>({date})</dark_gray>"
-  # Max number of recent infractions to show in hover.
+  
+  # The maximum number of recent warnings to display in the hover text.
   max-hover-infractions: 3
-  # Placeholder if no infractions are found.
+  
+  # Text displayed if the player has no recent warnings.
   no-infractions: "<gray>No recent infractions."
-  # Message when bio is set.
+  
+  # --- Profile Settings ---
+  
+  # Message sent to a player after they update their bio with /setbio.
   bio-set: "<#55FF55>Your bio has been updated!"
 
 # Automatically turn URLs in chat into clickable links.

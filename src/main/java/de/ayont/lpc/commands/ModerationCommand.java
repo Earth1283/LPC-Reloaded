@@ -52,6 +52,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleMute(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("mutes.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Muting is currently disabled."));
+            return true;
+        }
         if (!sender.hasPermission("lpc.mute")) {
             sender.sendMessage(miniMessage.deserialize("<red>No permission."));
             return true;
@@ -93,6 +97,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleUnmute(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("mutes.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Muting is currently disabled."));
+            return true;
+        }
         if (!sender.hasPermission("lpc.unmute")) {
             sender.sendMessage(miniMessage.deserialize("<red>No permission."));
             return true;
@@ -114,6 +122,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleWarn(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Warnings are currently disabled."));
+            return true;
+        }
         if (!sender.hasPermission("lpc.warn")) {
             sender.sendMessage(miniMessage.deserialize("<red>No permission."));
             return true;
@@ -145,6 +157,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleWarnings(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Warnings are currently disabled."));
+            return true;
+        }
         if (!sender.hasPermission("lpc.warnings")) {
             sender.sendMessage(miniMessage.deserialize("<red>No permission."));
             return true;
@@ -170,6 +186,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleDelWarn(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("warnings.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Warnings are currently disabled."));
+            return true;
+        }
         if (!sender.hasPermission("lpc.delwarn")) {
             sender.sendMessage(miniMessage.deserialize("<red>No permission."));
             return true;
@@ -190,6 +210,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleProfile(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("profiles.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Profiles are currently disabled."));
+            return true;
+        }
         OfflinePlayer target;
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
@@ -220,6 +244,10 @@ public class ModerationCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleSetBio(CommandSender sender, String[] args) {
+        if (!plugin.getConfig().getBoolean("profiles.enabled", true)) {
+            sender.sendMessage(miniMessage.deserialize("<red>Profiles are currently disabled."));
+            return true;
+        }
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can set their bio.");
             return true;
