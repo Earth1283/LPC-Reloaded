@@ -74,7 +74,13 @@ public class ChatBubbleManager {
 
         // Visibility toggle
         if (plugin.isPaper()) {
+            boolean seeSelf = plugin.getConfig().getBoolean("chat-bubbles.see-self", true);
+            if (!seeSelf) {
+                player.hideEntity(plugin, textDisplay);
+            }
+            
             for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.equals(player)) continue; // Handled above
                 if (!plugin.isChatBubblesEnabled(p.getUniqueId())) {
                     p.hideEntity(plugin, textDisplay);
                 }

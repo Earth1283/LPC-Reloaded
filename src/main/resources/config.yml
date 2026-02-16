@@ -25,50 +25,61 @@
 #    - {message}, {name}, {displayname}, {world}
 #    - {prefix}, {suffix}, {prefixes}, {suffixes}
 #    - {username-color}, {message-color}
+#
+# 5. SPECIAL PLACEHOLDERS
+#    - [item]: Displays the sender's main hand item with hover details.
+#    - Requires permission: lpc.itemplaceholder
+#    - Toggle: 'use-item-placeholder' setting below.
 # ----------------------------------------------------------------------
 
-# Chat Format
+# Main chat format used if channels are disabled or for the default global channel.
+# Supports all MiniMessage tags.
 chat-format: "{prefix}{name}<dark_gray> »<reset> {message}"
 
-# Private Message Formats
-# Placeholders:
-# {message} - the message sent
-# {sender} - the sender's name
-# {receiver} - the receiver's name
+# Configuration for private messaging (/msg, /reply).
+# Placeholders: {message} - the message, {sender} - sender name, {receiver} - receiver name.
 private-message-formats:
   sender: "<gray>You to {receiver}: <white>{message}"
   receiver: "<gray>{sender} to You: <white>{message}"
 
-# Set the format per group.
-# Note: Option for more advanced users. Remove comments to run.
+# Format per LuckPerms group. Group names must be lowercase.
+# Takes priority over 'chat-format'.
 group-formats:
 #  default: "[default] {name}<dark_gray> »<reset> {message}"
 #  admin: "[admin] {name}<dark_gray> »<reset> {message}"
 
-# Set the format per track
-# Note: Group formatting takes priority over track formatting, ensure user isn't in a group with corresponding format to apply track format
+# Format per LuckPerms track. 
+# Group formatting takes priority over track formatting.
 track-formats:
 #  staff_track: "[staff] {name}<dark_gray> »<reset> {message}"
 #  donator_track: "{donator_rank} {name}<dark_gray> »<reset> {message}"
 
-# Should the [item] placeholder be enabled
+# Whether players can use [item] in chat to showcase their held item.
+# Requires 'lpc.itemplaceholder' permission.
 use-item-placeholder: true
 
-# Editing Reload-message
+# The message sent to the sender after successfully running '/lpc reload'.
 reload-message: "<green>Reloaded LPC Configuration!"
 
 # ----------------------------------------------------------------------
 # Chat Channels
 # ----------------------------------------------------------------------
+# Channels allow separating chat into different streams (Global, Staff, Local).
 channels:
+  # Set to true to enable the channel system.
   enabled: true
+  
+  # The channel players are placed in by default.
   default-channel: "global"
   
-  # Storage for player channel preferences
-  # Options: MEMORY, SQLITE, MYSQL
+  # How to persist player channel choices across sessions.
+  # Options: 
+  #   MEMORY - Reset on restart.
+  #   SQLITE - Save to a local file (best for single servers).
+  #   MYSQL  - Save to an external database (best for networks).
   storage:
     type: "SQLITE"
-    file: "channels.db" # for SQLITE
+    file: "channels.db" # Name of the file for SQLITE storage.
     mysql:
       host: "localhost"
       port: 3306
@@ -77,21 +88,26 @@ channels:
       password: ""
       table-prefix: "lpc_"
 
-  # Channel Definitions
+  # List of defined channels.
   list:
     global:
+      # 'global' type sends to everyone on the server.
       type: "global"
       permission: ""
       format: "{prefix}{name}<dark_gray> »<reset> {message}"
-      shortcut: "g" # /g <msg> or /g (switch)
-      symbol: "!" # !message sends to global
+      # Shortcut allows switching focus: /g
+      shortcut: "g" 
+      # Symbol allows quick messaging: !hello world
+      symbol: "!" 
     staff:
+      # 'permission' type requires a specific permission to read and join.
       type: "permission"
       permission: "lpc.channel.staff"
       format: "<red>[Staff] {name}: <white>{message}"
       shortcut: "sc"
       symbol: "#"
     local:
+      # 'range' type limits recipients based on blocks distance from sender.
       type: "range"
       range: 100
       format: "<yellow>[L] {name}: <white>{message}"
@@ -102,36 +118,43 @@ channels:
 # Feature Expansions
 # ----------------------------------------------------------------------
 
-# 1. Chat Mentions
+# Highlight player names in chat when mentioned.
 mentions:
   enabled: true
+  # How the mentioned name should appear.
   format: "<gradient:#FFD700:#FF8C00><b>@{name}</b></gradient>"
+  # Sound played to the mentioned player. Use Bukkit sound names.
   sound: "entity.experience_orb.pickup"
   volume: 1.0
   pitch: 1.0
+  # Whether to suggest player names when typing @ in chat.
   tab-complete: true
 
-# 2. Social Spy
+# Allows staff to monitor private messages between players.
 social-spy:
+  # The format seen by spies. {sender}, {receiver}, and {message} are available.
   format: "<gradient:#555555:#AAAAAA>[Spy]</gradient> <#AAAAAA>{sender} -> {receiver}: <#FFFFFF>{message}"
 
-# 3. Interactive Player Elements
+# Add click and hover interactions to player names in chat.
 interactive:
   enabled: true
-  click-action: SUGGEST_COMMAND # Options: SUGGEST_COMMAND, RUN_COMMAND, OPEN_URL
+  # Action when clicking a player's name: SUGGEST_COMMAND, RUN_COMMAND, OPEN_URL.
+  click-action: SUGGEST_COMMAND 
+  # The value for the click action. {name} is replaced by the player's name.
   click-value: "/msg {name} "
+  # Lines displayed when hovering over a name. Supports MiniMessage and Placeholders.
   hover-text:
     - "<gradient:#AAAAAA:#FFFFFF>Rank: {prefix}</gradient>"
     - "<#AAAAAA>World: <#FFFFFF>{world}"
     - "<#AAAAAA>Click to message!"
 
-# 4. Simple Staff Chat
+# Legacy Staff Chat system (Used if 'channels' is disabled).
 staff-chat:
   enabled: true
   format: "<gradient:#AA0000:#FF5555>[Staff] {name}:</gradient> <#FF5555>{message}"
-  prefix: "#" # Use #message to send to staff chat
+  prefix: "#" # Using # at start of message sends to staff chat.
 
-# 5. Ignore System
+# Allow players to block messages from specific individuals.
 ignore:
   enabled: true
   messages:
@@ -141,61 +164,96 @@ ignore:
     already-ignored: "<#FF5555>You are already ignoring {player}."
     not-ignored: "<#FF5555>You are not ignoring {player}."
 
-# 6. Advanced Chat Filter
+# Automated moderation for chat messages.
 filter:
   enabled: true
-  cooldown: 1.5 # seconds
+  # Minimum time between messages (in seconds).
+  cooldown: 1.5 
+  
+  # Prevent Discord invite links.
   anti-discord:
     enabled: true
     regex: "discord(?:\\.gg|app\\.com\\/invite|\\.com\\/invite)\\/[a-zA-Z0-9]+"
     deny-message: "<gradient:#FF5555:#AA0000>Discord invites are not allowed!</gradient>"
+  
+  # Prevent general website links.
   anti-link:
     enabled: true
     regex: "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
     deny-message: "<gradient:#FF5555:#AA0000>Links are not allowed in chat!</gradient>"
+  
+  # List of words to block or replace.
   blocked-words:
     - "badword1"
-    - "regex:\\b(f[u*]ck)\\b"
+    - "regex:\\b(f[u*]ck)\\b" # Use 'regex:' for advanced matching.
+  
+  # What blocked words are replaced with.
   replacement: "****"
+  
+  # Message sent to players when they chat too fast. {time} is time left.
   deny-message: "<red>Please wait {time}s before sending another message."
 
-# 7. URL Auto-Highlighting
+# Automatically turn URLs in chat into clickable links.
 url-highlighting:
   enabled: true
+  # The format of the highlighted link. {url} is the link.
   format: "<underlined><gradient:#55FFFF:#00AAAA>{url}</gradient></underlined>"
+  # Hover text for the link.
   hover-text: "<#AAAAAA>Click to open: <#FFFFFF>{url}"
 
-# 8. Custom Join/Quit Messages
+# Customize or enable join and leave messages.
 join-quit-messages:
   enabled: true
   join: "<#AAAAAA>[<#55FF55>+</#55FF55>] <gradient:#55FF55:#FFFFFF>{prefix}{name}</gradient>"
   quit: "<#AAAAAA>[<#FF5555>-</#FF5555>] <gradient:#FF5555:#FFFFFF>{prefix}{name}</gradient>"
   first-join: "<gradient:#FFAA00:#FFD700>Welcome {name} to the server!</gradient>"
 
-# 9. Auto-Announcer (Broadcasts)
+# Automatic server-wide broadcasts.
 announcer:
   enabled: true
-  interval: 300 # seconds
-  selection-strategy: "ordered" # Options: random, ordered (top to bottom), reverse (bottom to top)
+  # Interval between messages (in seconds).
+  interval: 300 
+  # How to pick the next message: 'random', 'ordered', or 'reverse'.
+  selection-strategy: "ordered" 
   messages:
     - "<gradient:#55FFFF:#00AAAA>Tip: Use /help to see available commands!</gradient>"
     - "<gradient:#55FF55:#00AA00>Join our Discord: discord.gg/example</gradient>"
     - "<gradient:#FFAA00:#FFD700>Visit our wiki for tutorials!</gradient>"
 
-# 10. Chat Clear Command
+# Configuration for the '/chatclear' command.
 chat-clear:
+  # Message broadcasted when chat is cleared. {staff} is the staff member.
   broadcast: "<gradient:#FF5555:#AA0000>The chat has been cleared by {staff}.</gradient>"
+  # Number of empty lines sent to clear the chat.
   lines: 100
 
-# 11. Chat Bubbles (Text Display Entities)
+# Chat Bubbles (Text Display Entities)
+# Requires Minecraft 1.19.4 or newer.
 chat-bubbles:
   enabled: true
-  duration: 5.0 # seconds
-  height-offset: 2.8 # blocks above player head
-  background-color: "0,0,0,100" # RGBA (0-255)
+  # How long (in seconds) the bubble stays above the player's head.
+  duration: 5.0 
+  # Height offset (in blocks) above the player's head.
+  height-offset: 2.8 
+  # Background color in RGBA (Red, Green, Blue, Alpha). 0-255.
+  background-color: "0,0,0,100" 
+  # Whether the bubble can be seen through solid walls.
   see-through: false
+  # Whether a player can see their own chat bubbles.
+  see-self: true
+  # Whether the text should have a drop shadow.
   shadow: true
+  # Visual size of the bubble.
   scale: 1.0
-  billboard: "CENTER" # CENTER, VERTICAL, HORIZONTAL, FIXED
-  text-wrap-width: 200 # pixels (approx)
-  behavior: "replace" # replace, stack
+  # Billboard behavior: 
+  #   CENTER - Rotates to face player.
+  #   VERTICAL - Rotates only left/right.
+  #   HORIZONTAL - Rotates only up/down.
+  #   FIXED - No rotation.
+  billboard: "CENTER"
+  # Max width of the text before it wraps to a new line (approx. pixels).
+  text-wrap-width: 200 
+  # behavior: 
+  #   'replace' - New bubble removes the old one.
+  #   'stack' - Not fully implemented yet.
+  behavior: "replace"
