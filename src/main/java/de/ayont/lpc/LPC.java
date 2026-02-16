@@ -117,6 +117,9 @@ public final class LPC extends JavaPlugin {
         this.chatBubbleManager = new ChatBubbleManager(this);
         
         saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
         initStorage();
 
         this.moderationManager = new ModerationManager(this);
@@ -175,6 +178,13 @@ public final class LPC extends JavaPlugin {
             getLogger().log(Level.SEVERE, "Failed to initialize storage: " + type, e);
             storage = new InMemoryStorage(); // Fallback
         }
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
     }
 
     public void registerCommand() {
