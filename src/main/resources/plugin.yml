@@ -1,7 +1,7 @@
-name: LPC
+name: LPC-Reloaded
 version: '${version}'
 main: de.ayont.lpc.LPC
-api-version: '1.21'
+api-version: '1.20'
 authors: [Ayont, Varilx-Development, Earth1283]
 depend: [LuckPerms]
 softdepend: [PlaceholderAPI]

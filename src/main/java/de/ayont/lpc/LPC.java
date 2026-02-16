@@ -11,6 +11,7 @@ import de.ayont.lpc.storage.Storage;
 import de.ayont.lpc.storage.impl.InMemoryStorage;
 import de.ayont.lpc.storage.impl.MySQLStorage;
 import de.ayont.lpc.storage.impl.SQLiteStorage;
+import me.clip.placeholderapi.metrics.bukkit.Metrics;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -112,6 +113,10 @@ public final class LPC extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Metrics
+        int pluginId = 29570;
+        Metrics metrics = new Metrics(this, pluginId);
+
         this.adventure = BukkitAudiences.create(this);
         this.isPaper = checkIfPaper();
         this.chatBubbleManager = new ChatBubbleManager(this);
