@@ -84,13 +84,19 @@ public abstract class BaseChannel implements Channel {
 
         String formattedMessage = replacePlaceholders(format, sender).replace("{message}", message);
         Component component = miniMessage.deserialize(formattedMessage);
+        
+        // Cache legacy string for Spigot recipients to avoid redundant serialization
+        String legacyMessage = null;
+        if (!plugin.isPaper()) {
+            legacyMessage = LPC.getLegacySerializer().serialize(component);
+        }
 
         for (Player recipient : Bukkit.getOnlinePlayers()) {
             if (canRead(recipient, sender)) {
                 if (plugin.isPaper()) {
                     recipient.sendMessage(component);
                 } else {
-                    recipient.sendMessage(LPC.getLegacySerializer().serialize(component));
+                    recipient.sendMessage(legacyMessage);
                 }
             }
         }
@@ -99,7 +105,7 @@ public abstract class BaseChannel implements Channel {
         if (plugin.isPaper()) {
             plugin.getAdventure().console().sendMessage(component);
         } else {
-            plugin.getLogger().info(LPC.getLegacySerializer().serialize(component));
+            plugin.getLogger().info(legacyMessage != null ? legacyMessage : LPC.getLegacySerializer().serialize(component));
         }
     }
 

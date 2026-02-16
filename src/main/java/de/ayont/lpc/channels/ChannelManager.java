@@ -102,10 +102,14 @@ public class ChannelManager {
     
     public void loadPlayerChannel(Player player) {
         if (storage == null) return;
-        String channelId = storage.load(player.getUniqueId());
-        if (channelId != null && channels.containsKey(channelId)) {
-            playerChannels.put(player.getUniqueId(), channelId);
-        }
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            String channelId = storage.load(player.getUniqueId());
+            if (channelId != null && channels.containsKey(channelId)) {
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    playerChannels.put(player.getUniqueId(), channelId);
+                });
+            }
+        });
     }
 
     public Channel getPlayerChannel(Player player) {
