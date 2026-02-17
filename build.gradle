@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '9.3.1'
 }
 
 group = 'de.ayont'
@@ -31,7 +31,8 @@ dependencies {
 }
 
 shadowJar {
-    archiveFileName.set('LPC-Minimessage.jar')
+    archiveFileName.set("LPC-Minimessage-${project.version}.jar")
+    relocate 'net.kyori', 'de.ayont.lpc.lib.kyori'
     mergeServiceFiles {
         exclude 'META-INF/*.DSA'
         exclude 'META-INF/*.RSA'
