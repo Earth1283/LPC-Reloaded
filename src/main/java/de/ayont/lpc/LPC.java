@@ -11,7 +11,6 @@ import de.ayont.lpc.storage.Storage;
 import de.ayont.lpc.storage.impl.InMemoryStorage;
 import de.ayont.lpc.storage.impl.MySQLStorage;
 import de.ayont.lpc.storage.impl.SQLiteStorage;
-import me.clip.placeholderapi.metrics.bukkit.Metrics;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.plugin.java.JavaPlugin;
