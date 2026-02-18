@@ -13,6 +13,9 @@ import de.ayont.lpc.storage.impl.MySQLStorage;
 import de.ayont.lpc.storage.impl.SQLiteStorage;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -198,43 +201,37 @@ public final class LPC extends JavaPlugin {
     }
 
     public void registerCommand() {
-        String commandName = "lpc";
-        LPCCommand lpcCommand = new LPCCommand(this);
-
-        this.getCommand(commandName).setExecutor(lpcCommand);
-        this.getCommand(commandName).setTabCompleter(lpcCommand);
+        register("lpc", new LPCCommand(this));
 
         PrivateMessageCommand pmCommand = new PrivateMessageCommand(this);
-        this.getCommand("msg").setExecutor(pmCommand);
-        this.getCommand("msg").setTabCompleter(pmCommand);
-        this.getCommand("reply").setExecutor(pmCommand);
-        this.getCommand("reply").setTabCompleter(pmCommand);
+        register("msg", pmCommand);
+        register("reply", pmCommand);
 
-        this.getCommand("socialspy").setExecutor(new SocialSpyCommand(this));
-        this.getCommand("ignore").setExecutor(new IgnoreCommand(this));
-        this.getCommand("staffchat").setExecutor(new StaffChatCommand(this));
-        this.getCommand("chatclear").setExecutor(new ChatClearCommand(this));
+        register("socialspy", new SocialSpyCommand(this));
+        register("ignore", new IgnoreCommand(this));
+        register("staffchat", new StaffChatCommand(this));
+        register("chatclear", new ChatClearCommand(this));
         
         if (this.channelManager != null) {
-            this.getCommand("channel").setExecutor(new ChannelCommand(this));
+            register("channel", new ChannelCommand(this));
         }
 
         // Moderation Commands
         ModerationCommand modCommand = new ModerationCommand(this);
-        this.getCommand("mute").setExecutor(modCommand);
-        this.getCommand("mute").setTabCompleter(modCommand);
-        this.getCommand("unmute").setExecutor(modCommand);
-        this.getCommand("unmute").setTabCompleter(modCommand);
-        this.getCommand("warn").setExecutor(modCommand);
-        this.getCommand("warn").setTabCompleter(modCommand);
-        this.getCommand("warnings").setExecutor(modCommand);
-        this.getCommand("warnings").setTabCompleter(modCommand);
-        this.getCommand("delwarn").setExecutor(modCommand);
-        this.getCommand("profile").setExecutor(modCommand);
-        this.getCommand("profile").setTabCompleter(modCommand);
-        this.getCommand("setbio").setExecutor(modCommand);
-        this.getCommand("slowmode").setExecutor(modCommand);
-        this.getCommand("slowmode").setTabCompleter(modCommand);
+        String[] modCommands = {"mute", "unmute", "warn", "warnings", "delwarn", "profile", "setbio", "slowmode"};
+        for (String cmd : modCommands) {
+            register(cmd, modCommand);
+        }
+    }
+
+    private void register(String name, CommandExecutor executor) {
+        PluginCommand command = getCommand(name);
+        if (command != null) {
+            command.setExecutor(executor);
+            if (executor instanceof TabCompleter) {
+                command.setTabCompleter((TabCompleter) executor);
+            }
+        }
     }
 
     public void setLastMessaged(UUID sender, UUID receiver) {
