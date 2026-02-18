@@ -29,6 +29,7 @@ public final class LPC extends JavaPlugin {
     private BukkitAudiences adventure;
     private ChatBubbleManager chatBubbleManager;
     private ChannelManager channelManager;
+    private de.ayont.lpc.renderer.ChatRendererUtil chatRendererUtil;
     private ModerationManager moderationManager;
     private Storage storage;
 
@@ -40,6 +41,10 @@ public final class LPC extends JavaPlugin {
 
     public static LegacyComponentSerializer getLegacySerializer() {
         return legacySerializer;
+    }
+
+    public de.ayont.lpc.renderer.ChatRendererUtil getChatRendererUtil() {
+        return chatRendererUtil;
     }
 
     public boolean isPaper() {
@@ -118,6 +123,7 @@ public final class LPC extends JavaPlugin {
 
         this.adventure = BukkitAudiences.create(this);
         this.isPaper = checkIfPaper();
+        this.chatRendererUtil = new de.ayont.lpc.renderer.ChatRendererUtil(this);
         this.chatBubbleManager = new ChatBubbleManager(this);
         
         saveDefaultConfig();

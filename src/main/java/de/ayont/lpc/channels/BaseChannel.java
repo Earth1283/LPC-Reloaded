@@ -82,47 +82,28 @@ public abstract class BaseChannel implements Channel {
             return;
         }
 
-        String formattedMessage = replacePlaceholders(format, sender).replace("{message}", message);
-        Component component = miniMessage.deserialize(formattedMessage);
-        
-        // Cache legacy string for Spigot recipients to avoid redundant serialization
-        String legacyMessage = null;
-        if (!plugin.isPaper()) {
-            legacyMessage = LPC.getLegacySerializer().serialize(component);
-        }
-
         for (Player recipient : Bukkit.getOnlinePlayers()) {
             if (canRead(recipient, sender)) {
+                Component component = plugin.getChatRendererUtil().render(sender, message, recipient, id);
                 if (plugin.isPaper()) {
                     recipient.sendMessage(component);
                 } else {
-                    recipient.sendMessage(legacyMessage);
+                    recipient.sendMessage(LPC.getLegacySerializer().serialize(component));
                 }
             }
         }
-        
+
         // Log to console
+        Component consoleComponent = plugin.getChatRendererUtil().render(sender, message, plugin.getAdventure().console(), id);
         if (plugin.isPaper()) {
-            plugin.getAdventure().console().sendMessage(component);
+            plugin.getAdventure().console().sendMessage(consoleComponent);
         } else {
-            plugin.getLogger().info(legacyMessage != null ? legacyMessage : LPC.getLegacySerializer().serialize(component));
+            plugin.getLogger().info(LPC.getLegacySerializer().serialize(consoleComponent));
         }
     }
 
     @Override
     public void onJoin(Player player) {
         // Optional: Send "You joined X channel"
-    }
-
-    protected String replacePlaceholders(String format, Player player) {
-        CachedMetaData metaData = this.luckPerms.getPlayerAdapter(Player.class).getMetaData(player);
-        return format
-                .replace("{name}", player.getName())
-                .replace("{displayname}", player.getDisplayName()) // Spigot compat
-                .replace("{world}", player.getWorld().getName())
-                .replace("{prefix}", metaData.getPrefix() != null ? metaData.getPrefix() : "")
-                .replace("{suffix}", metaData.getSuffix() != null ? metaData.getSuffix() : "")
-                .replace("{username-color}", metaData.getMetaValue("username-color") != null ? metaData.getMetaValue("username-color") : "")
-                .replace("{message-color}", metaData.getMetaValue("message-color") != null ? metaData.getMetaValue("message-color") : "");
     }
 }

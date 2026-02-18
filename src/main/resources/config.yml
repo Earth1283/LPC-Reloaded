@@ -44,12 +44,14 @@ private-message-formats:
 
 # Format per LuckPerms group. Group names must be lowercase.
 # Takes priority over 'chat-format'.
+# You can also define these inside individual channels under 'channels.list.<id>.group-formats'.
 group-formats:
 #  default: "[default] {name}<dark_gray> »<reset> {message}"
 #  admin: "[admin] {name}<dark_gray> »<reset> {message}"
 
 # Format per LuckPerms track. 
 # Group formatting takes priority over track formatting.
+# Also works inside channels under 'channels.list.<id>.track-formats'.
 track-formats:
 #  staff_track: "[staff] {name}<dark_gray> »<reset> {message}"
 #  donator_track: "{donator_rank} {name}<dark_gray> »<reset> {message}"
@@ -115,6 +117,9 @@ channels:
       type: "global"
       permission: ""
       format: "{prefix}{name}<dark_gray> »<reset> {message}"
+      # Example of channel-specific group formats:
+      # group-formats:
+      #   admin: "<red>[Global-Admin]</red> {prefix}{name} » {message}"
       # Shortcut allows switching focus: /g
       shortcut: "g" 
       # Symbol allows quick messaging: !hello world
