@@ -147,7 +147,7 @@ public final class LPC extends JavaPlugin {
 
         int interval = getConfig().getInt("announcer.interval", 300) * 20;
         if (interval > 0) {
-            new AutoAnnouncer(this).runTaskTimer(this, interval, interval);
+            new AutoAnnouncer(this).runTaskTimerAsynchronously(this, interval, interval);
         }
     }
 
