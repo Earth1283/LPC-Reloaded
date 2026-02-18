@@ -171,7 +171,7 @@ interactive:
   # Action when clicking a player's name: SUGGEST_COMMAND, RUN_COMMAND, OPEN_URL.
   # SUGGEST_COMMAND sends the `/msg thatPlayerName` to the player's chat, though it doesn't run it
   # RUN_COMMAND is not advised, it runs `/msg playerName` without anything, defeating the purpose
-  # OPEN_URL is definately not advised. A playername is typically not a URL.
+  # OPEN_URL is definitely not advised. A playername is typically not a URL.
   click-action: SUGGEST_COMMAND 
   # The value for the click action. {name} is replaced by the player's name.
   click-value: "/msg {name} "
@@ -393,7 +393,7 @@ chat-bubbles:
   # Max width of the text before it wraps to a new line (approx. pixels).
   text-wrap-width: 200 
   # behavior: 
-  #   'replace' - New bubble removes the old one.
+  #   'replace' - New bubble removes the old one instantly.
   #   'stack' - Not fully implemented yet.
   behavior: "replace"
   messages:
