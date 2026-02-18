@@ -2,79 +2,65 @@
 
 ![LPC Banner](https://cdn.varilx.de/raw/fwtRZS.png)
 
-LPC is a powerful, modern, and flexible chat formatting plugin with full **MiniMessage** support, designed specifically to work seamlessly with **LuckPerms**. It replaces legacy formatting with a rich, gradient-capable system and adds immersive features like chat bubbles and channels.
+LPC (LuckPerms Chat) is a **powerful, modern, and flexible chat formatting plugin** for Spigot and Paper servers. Designed specifically for **LuckPerms**, it replaces outdated legacy formatting with a rich, **MiniMessage-powered** system. Enhance your Minecraft server's social experience with gradients, chat bubbles, and advanced channel management.
 
-## 🔧 Requirements
+## 🔧 Why Choose LPC Reloaded?
 
-- **LuckPerms** (Required) – Permissions & Metadata provider
-- **PlaceholderAPI** (Optional) – For additional variable support
-- **Minecraft 1.19.4+** – Required for Chat Bubble features (Text Displays)
+LPC is optimized for performance and built for modern Minecraft versions. It bridges the gap between complex permission systems and beautiful chat aesthetics.
 
-## ✅ Features
+- **LuckPerms Integration**: Native support for primary groups, prefixes, suffixes, and custom metadata.
+- **Paper & Spigot Support**: Works seamlessly across both platforms with advanced Paper-only features.
+- **SEO Optimized**: The most complete chat solution for 1.19.4, 1.20, and 1.21+ servers.
 
-- **Modern Formatting**: Full [MiniMessage](https://docs.advntr.dev/minimessage/format.html) support (Gradients, Hex, Hover/Click events).
-- **Chat Bubbles**: Immersive Text Display entities above players' heads. Fully customizable and toggleable by players.
-- **Chat Channels**: Flexible Global, Local (range-based), and Staff channels with persistent storage (SQLite/MySQL).
-- **[item] Showcase**: Display your held item in chat with a full vanilla-style hover tooltip (shows NBT, enchantments, and lore).
-- **Group & Track Logic**: Assign different chat formats based on LuckPerms groups or tracks.
-- **Social Spy**: Monitor private messages with high-quality formatting.
-- **Advanced Filters**: Built-in Regex filters for anti-discord, anti-link, and customizable word blocking.
-- **Auto-Announcer**: Scheduled, multi-line announcements with gradient support.
+## ✅ Latest Features
 
-## 🧑‍💼 Permissions
+- **Modern MiniMessage Formatting**: Full support for [MiniMessage](https://docs.advntr.dev/minimessage/format.html) (Gradients, Hex colors, Hover text, and Click events).
+- **Immersive Chat Bubbles**: Text Display entities appear above players' heads. Fully customizable duration, scale, and transparency.
+- **Advanced Chat Channels**:
+    - **Global, Local (Range-based), and Staff channels**.
+    - **Per-Channel Formatting**: Unique formats for different chat streams.
+    - **Group-Specific Channel Formats**: Show different styles based on LuckPerms groups *inside* specific channels.
+    - **Persistent Storage**: SQLite or MySQL support for player channel preferences.
+- **[item] Showcase**: Display your held item with a vanilla-style hover tooltip (shows NBT, enchantments, and lore).
+- **Global Group & Track Logic**: Assign unique formats based on LuckPerms groups or tracks with priority handling.
+- **Smart Mentions**: Highlight player names in chat with customizable sounds and visuals.
+- **Automated Moderation**:
+    - **Regex Filters**: Block Discord invites, links, and custom words.
+    - **Caps Control & Cooldowns**: Keep your chat clean and spam-free.
+- **Social Spy**: Staff can monitor private messages with clear, professional formatting.
 
-| Command / Feature | Permission Node | Description |
+## 🧑‍💼 Permissions & Commands
+
+| Feature | Permission Node | Command |
 | :--- | :--- | :--- |
-| `/lpc reload` | `lpc.reload` | Reloads the configuration |
-| `/lpc bubbles` | `lpc.bubbles.toggle` | Toggle chat bubbles visibility |
-| `/channel` | `lpc.channel.use` | Switch or message in channels |
-| MiniMessage | `lpc.chatcolor` | Allows using MiniMessage in chat |
-| `[item]` | `lpc.itemplaceholder` | Enables item showcasing |
-| Staff Chat | `lpc.staffchat` | Access to staff channels |
-| Social Spy | `lpc.socialspy` | Monitor private messages |
+| **Reload Config** | `lpc.reload` | `/lpc reload` |
+| **Toggle Bubbles** | `lpc.bubbles.toggle` | `/lpc bubbles` |
+| **Switch Channels** | `lpc.channel.use` | `/channel <name>` |
+| **MiniMessage** | `lpc.chatcolor` | (Automatic) |
+| **Item Showcase** | `lpc.itemplaceholder` | `[item]` |
+| **Staff Chat** | `lpc.staffchat` | `/sc <message>` |
+| **Social Spy** | `lpc.socialspy` | `/socialspy` |
+| **Warn/Mute** | `lpc.warn` / `lpc.mute` | `/warn`, `/mute` |
 
-## ⚙️ Configuration Snippet
+## 🪄 Supported Placeholders
 
-LPC uses a single, well-documented `config.yml`. Here is a look at the modern channel and bubble setup:
+LPC supports standard placeholders and integrates with **PlaceholderAPI**.
 
-```yaml
-# Chat Channels
-channels:
-  enabled: true
-  storage:
-    type: "SQLITE"
-  list:
-    global:
-      format: "{prefix}{name}<dark_gray> »<reset> {message}"
-      symbol: "!"
-    local:
-      type: "range"
-      range: 100
-      format: "<yellow>[L] {name}: <white>{message}"
+- `{message}`: The chat message.
+- `{name}` / `{displayname}`: Sender's name.
+- `{prefix}` / `{suffix}`: Highest priority LuckPerms metadata.
+- `{prefixes}` / `{suffixes}`: Combined list of all prefixes/suffixes.
+- `{world}`: Current world of the player.
+- `{username-color}` / `{message-color}`: Defined via LuckPerms meta.
+- **[item]**: Renders the held item.
 
-# Chat Bubbles
-chat-bubbles:
-  enabled: true
-  duration: 5.0
-  background-color: "0,0,0,100"
-```
+## 🚀 Quick Setup
 
-## 🪄 Available Placeholders
-
-- `{message}`: The chat message
-- `{name}` / `{displayname}`: Player identity
-- `{prefix}` / `{suffix}`: Highest priority LuckPerms meta
-- `{prefixes}` / `{suffixes}`: Full sorted list of meta
-- `{world}`: Current world name
-- `{username-color}` / `{message-color} `: Meta-defined colors
-
-## 🚀 Installation
-
-1. Place `LPC.jar` into your `/plugins` folder.
-2. Restart your server to generate files.
-3. Configure your formats in `config.yml`.
-4. Use `/lpc reload` to apply changes instantly!
+1. **Download**: Place the `LPC.jar` in your `/plugins` folder.
+2. **Requirements**: Ensure **LuckPerms** is installed.
+3. **Configure**: Edit `config.yml` to define your `group-formats` and `channels`.
+4. **Reload**: Use `/lpc reload` to apply changes without restarting.
 
 ---
 
-*LPC is not affiliated with LuckPerms. For support, please visit our GitHub or Discord.*
+*LPC is not affiliated with LuckPerms. For support, please visit our GitHub or Discord. Optimized for Minecraft 1.20.x and 1.21.x.*
