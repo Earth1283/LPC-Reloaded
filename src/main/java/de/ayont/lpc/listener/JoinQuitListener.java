@@ -50,11 +50,7 @@ public class JoinQuitListener implements Listener {
 
         Component message = miniMessage.deserialize(replacePlaceholders(format, player));
 
-        if (plugin.isPaper()) {
-            event.joinMessage(message);
-        } else {
-            event.setJoinMessage(LPC.getLegacySerializer().serialize(message));
-        }
+        event.setJoinMessage(LPC.getLegacySerializer().serialize(message));
     }
 
     @EventHandler
@@ -74,11 +70,7 @@ public class JoinQuitListener implements Listener {
 
         Component message = miniMessage.deserialize(replacePlaceholders(format, player));
 
-        if (plugin.isPaper()) {
-            event.quitMessage(message);
-        } else {
-            event.setQuitMessage(LPC.getLegacySerializer().serialize(message));
-        }
+        event.setQuitMessage(LPC.getLegacySerializer().serialize(message));
     }
 
     private String replacePlaceholders(String format, Player player) {

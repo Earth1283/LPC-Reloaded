@@ -32,7 +32,6 @@ dependencies {
 
 shadowJar {
     archiveFileName.set("LPC-Minimessage-${project.version}.jar")
-    relocate 'net.kyori', 'de.ayont.lpc.lib.kyori'
     mergeServiceFiles {
         exclude 'META-INF/*.DSA'
         exclude 'META-INF/*.RSA'

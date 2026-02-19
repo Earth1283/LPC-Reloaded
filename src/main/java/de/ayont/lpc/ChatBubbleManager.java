@@ -42,6 +42,9 @@ public class ChatBubbleManager {
             
             int wrapWidth = plugin.getConfig().getInt("chat-bubbles.text-wrap-width", 200);
             display.setLineWidth(wrapWidth);
+            display.setBrightness(new Display.Brightness(15, 15));
+            display.setInterpolationDuration(1);
+            display.setInterpolationDelay(0);
 
             String colorStr = plugin.getConfig().getString("chat-bubbles.background-color", "0,0,0,100");
             try {
@@ -75,14 +78,20 @@ public class ChatBubbleManager {
         // Visibility toggle
         if (plugin.isPaper()) {
             boolean seeSelf = plugin.getConfig().getBoolean("chat-bubbles.see-self", true);
-            if (!seeSelf) {
+            boolean selfEnabled = plugin.isChatBubblesEnabled(player.getUniqueId());
+            
+            if (!seeSelf || !selfEnabled) {
                 player.hideEntity(plugin, textDisplay);
+            } else {
+                player.showEntity(plugin, textDisplay);
             }
             
             for (Player p : Bukkit.getOnlinePlayers()) {
-                if (p.equals(player)) continue; // Handled above
+                if (p.equals(player)) continue;
                 if (!plugin.isChatBubblesEnabled(p.getUniqueId())) {
                     p.hideEntity(plugin, textDisplay);
+                } else {
+                    p.showEntity(plugin, textDisplay);
                 }
             }
         }

@@ -53,7 +53,7 @@ public class AsyncChatListener implements Listener {
             String muteMsg = plugin.getConfig().getString(msgKey, "<red>You are muted! Reason: {reason}")
                     .replace("{reason}", mute.getReason())
                     .replace("{time}", timeStr);
-            player.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(muteMsg));
+            plugin.getAdventure().player(player).sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(muteMsg));
             return;
         }
 
@@ -87,7 +87,7 @@ public class AsyncChatListener implements Listener {
                 event.setCancelled(true);
                 String denyMsg = plugin.getConfig().getString("filter.deny-message", "<red>Please wait {time}s.");
                 double timeLeft = plugin.getModerationManager().getTimeLeft(player.getUniqueId());
-                player.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(denyMsg.replace("{time}", String.format("%.1f", timeLeft))));
+                plugin.getAdventure().player(player).sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(denyMsg.replace("{time}", String.format("%.1f", timeLeft))));
                 return;
             }
 
@@ -102,7 +102,7 @@ public class AsyncChatListener implements Listener {
                     }
                     if (((double) upperCount / plainMessage.length()) * 100 > percentage) {
                         event.setCancelled(true);
-                        player.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.caps-limit.deny-message", "<red>Too many caps!")));
+                        plugin.getAdventure().player(player).sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.caps-limit.deny-message", "<red>Too many caps!")));
                         return;
                     }
                 }
@@ -113,7 +113,7 @@ public class AsyncChatListener implements Listener {
                 String regex = plugin.getConfig().getString("filter.anti-discord.regex", "discord(?:\\.gg|app\\.com\\/invite|\\.com\\/invite)\\/[a-zA-Z0-9]+");
                 if (java.util.regex.Pattern.compile(regex).matcher(plainMessage).find()) {
                     event.setCancelled(true);
-                    player.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.anti-discord.deny-message", "<red>No discord invites!")));
+                    plugin.getAdventure().player(player).sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.anti-discord.deny-message", "<red>No discord invites!")));
                     return;
                 }
             }
@@ -123,7 +123,7 @@ public class AsyncChatListener implements Listener {
                 String regex = plugin.getConfig().getString("filter.anti-link.regex", "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)");
                 if (java.util.regex.Pattern.compile(regex).matcher(plainMessage).find()) {
                     event.setCancelled(true);
-                    player.sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.anti-link.deny-message", "<red>No links!")));
+                    plugin.getAdventure().player(player).sendMessage(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(plugin.getConfig().getString("filter.anti-link.deny-message", "<red>No links!")));
                     return;
                 }
             }
