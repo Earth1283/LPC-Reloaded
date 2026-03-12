@@ -373,7 +373,7 @@ chat-bubbles:
   # How long (in seconds) the bubble stays above the player's head.
   duration: 5.0 
   # Height offset (in blocks) above the player's head.
-  height-offset: 2.8 
+  height-offset: 1.25
   # Background color in RGBA (Red, Green, Blue, Alpha). 0-255, or it will break.
   background-color: "0,0,0,100" 
   # Whether the bubble can be seen through solid walls.
@@ -383,7 +383,7 @@ chat-bubbles:
   # Whether the text should have a drop shadow.
   shadow: true
   # Visual size of the bubble.
-  scale: 1.0
+  scale: 2
   # Billboard behavior: 
   #   CENTER - Rotates to face player.
   #   VERTICAL - Rotates only left/right.
