@@ -96,15 +96,15 @@ class LPC : JavaPlugin() {
         val type = config.getString("channels.storage.type", "MEMORY")!!.uppercase()
         try {
             lpcStorage = when (type) {
-                "SQLITE" -> SQLiteStorage(this, config.getString("channels.storage.file", "channels.db"))
+                "SQLITE" -> SQLiteStorage(this, config.getString("channels.storage.file", "channels.db")!!)
                 "MYSQL" -> MySQLStorage(
                     this,
-                    config.getString("channels.storage.mysql.host", "localhost"),
+                    config.getString("channels.storage.mysql.host", "localhost")!!,
                     config.getInt("channels.storage.mysql.port", 3306),
-                    config.getString("channels.storage.mysql.database", "lpc"),
-                    config.getString("channels.storage.mysql.username", "root"),
-                    config.getString("channels.storage.mysql.password", ""),
-                    config.getString("channels.storage.mysql.table-prefix", "lpc_")
+                    config.getString("channels.storage.mysql.database", "lpc")!!,
+                    config.getString("channels.storage.mysql.username", "root")!!,
+                    config.getString("channels.storage.mysql.password", "")!!,
+                    config.getString("channels.storage.mysql.table-prefix", "lpc_")!!
                 )
                 else -> InMemoryStorage()
             }
