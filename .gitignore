@@ -43,4 +43,4 @@ $RECYCLE.BIN/
 # Don't ignore the Gradle wrapper script
 !gradlew
 !gradlew.bat
-.devcontainer
+.devcontainer.worktrees/
